@@ -10,7 +10,7 @@
 #
 #  Layers applied:
 #    03-theme    Kvantum widget theme + Aurorae traffic-lights + color-schemes
-#    04-configs  global menu, floating dock, SF Pro, wallpaper, auto light/dark
+#    04-configs  global menu, floating dock, SF Pro, wallpaper, dynamic wallpaper, auto light/dark
 #    frost       stock KWin Blur behind translucent surfaces (Phase A; both OSes)
 #    glass       (Plasma 6 only) builds + enables the KWin 6 refraction effect (Phase B)
 #
@@ -102,14 +102,15 @@ phase_theme() {
   run bash "$HERE/03-theme/install-icons.sh"
   run bash "$HERE/03-theme/apply-kvantum-overrides.sh"
   run bash "$HERE/03-theme/aurorae/apply-aurorae.sh"
+  run bash "$HERE/03-theme/install-rounded-corners.sh"
   run bash "$HERE/03-theme/color-schemes/install-colors.sh"
 }
 
 phase_configs() {
   log "Configs — look&feel · global menu · dock · fonts · wallpaper · auto light/dark · a11y"
   local s
-  for s in 00-apply-lookandfeel 10-global-menu 20-dock-panel 30-fonts \
-           40-wallpaper 50-auto-light-dark 60-a11y; do
+  for s in 00-apply-lookandfeel 10-global-menu 20-dock-panel 25-panel-defloat 30-fonts \
+           40-wallpaper 45-dynamic-wallpaper 50-auto-light-dark 60-a11y; do
     local p="$HERE/04-configs/$s.sh"
     [[ -f "$p" ]] || { warn "missing $s.sh (skipping)"; continue; }
     step "$s"

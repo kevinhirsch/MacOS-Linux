@@ -1,0 +1,248 @@
+#!/usr/bin/env python3
+"""tahoe-wallpaper-phase — sun-driven 4-phase dynamic wallpaper for Plasma 6.
+
+Computes today's sun geometry for Phoenix, AZ with `astral`, maps `now` onto one
+of four macOS-Tahoe "Beach" frames, and applies it with plasma-apply-wallpaperimage.
+This owns the WALLPAPER only; tahoe-theme-switch keeps owning the light/dark THEME.
+
+Four frames (only 4 exist on disk; designed to slot a 5th "blue hour" trivially):
+    Night  -> 26-Tahoe-Beach-Night.png  dark, stars
+    Dawn   -> 26-Tahoe-Beach-Dawn.png   golden/twilight glow (reused morning + evening)
+    Day    -> 26-Tahoe-Beach-Day.png    bright midday blue
+    Dusk   -> 26-Tahoe-Beach-Dusk.png   deeper-blue civil twilight (evening only)
+
+Phase map across a day (all boundaries recomputed daily):
+    NIGHT                     [prev dusk_end .. dawn_start)   -> Night
+    MORNING GOLDEN/TWILIGHT   [dawn_start   .. dawn_end)      -> Dawn
+    DAY                       [dawn_end     .. gold_pm_start) -> Day
+    EVENING GOLDEN            [gold_pm_start.. sunset+SUN_PAD) -> Dawn
+    EVENING CIVIL TWILIGHT    [dusk_start   .. dusk_end)      -> Dusk
+    NIGHT                     [dusk_end     .. next dawn)     -> Night
+
+Twilight-extension rule (from the user, implemented literally): Phoenix civil
+twilight is only ~25-30 min. Do NOT show a transition frame for just its literal
+window. Each transition band is anchored on GOLDEN HOUR and widened to ~1h:
+    morning golden band  = sunrise - GH_LEAD .. sunrise + GH_TRAIL   (~20m before, ~40m after)
+    evening golden band  = sunset  - GH_TRAIL .. sunset  + GH_LEAD   (~40m before, ~20m after)
+If the raw astral civil-twilight window (dawn->sunrise or sunset->dusk) is < 1h,
+the band is widened to a full hour anchored on the golden hour rather than the raw
+twilight endpoints. The evening Dusk (deeper-blue) frame then fills from the end of
+the evening golden band until astral civil dusk, extended to at least DUSK_MIN so it
+too gets a visible, defensible span instead of a ~5-minute flash.
+
+Subcommands:
+    apply       compute phase for now, set the wallpaper (default)
+    schedule    print today's resolved boundaries + frames (sanity check)
+    next-time   print ISO-8601 of the next boundary at/after now (re-arm the timer)
+    which       print just the frame name that applies now
+
+Env overrides: TAHOE_LAT, TAHOE_LON, TAHOE_TZ (default Phoenix, no DST).
+TAHOE_WALLPAPER_DIR overrides the frames directory.
+"""
+import os
+import sys
+import subprocess
+import datetime as dt
+from pathlib import Path
+
+try:
+    from astral import LocationInfo
+    from astral.sun import sun
+except ImportError:
+    sys.stderr.write(
+        "tahoe-wallpaper-phase: python-astral not installed.\n"
+        "  pip install --user astral   (or your distro's python3-astral)\n"
+    )
+    sys.exit(2)
+
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:  # py<3.9
+    from backports.zoneinfo import ZoneInfo  # type: ignore
+
+# ---- location (Phoenix, AZ by default; no DST) ----------------------------
+LAT = float(os.environ.get("TAHOE_LAT", "33.4484"))
+LON = float(os.environ.get("TAHOE_LON", "-112.0740"))
+TZ = os.environ.get("TAHOE_TZ", "America/Phoenix")
+
+# ---- frames ---------------------------------------------------------------
+WPDIR = Path(os.environ.get(
+    "TAHOE_WALLPAPER_DIR",
+    str(Path(os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share")))
+        / "wallpapers" / "Tahoe-Beach-Dynamic" / "images"),
+))
+FRAME = {
+    "night": WPDIR / "26-Tahoe-Beach-Night.png",
+    "dawn":  WPDIR / "26-Tahoe-Beach-Dawn.png",   # golden hour (morning + evening)
+    "day":   WPDIR / "26-Tahoe-Beach-Day.png",
+    "dusk":  WPDIR / "26-Tahoe-Beach-Dusk.png",   # evening civil twilight (deeper blue)
+    # Optional future "blue hour" frame: drop 26-Tahoe-Beach-Blue.png here and it
+    # is picked up automatically as the evening pre-night frame if present.
+    "blue":  WPDIR / "26-Tahoe-Beach-Blue.png",
+}
+
+# ---- band tuning (golden-hour anchored) -----------------------------------
+GH_LEAD = dt.timedelta(minutes=20)   # golden band starts this far before sunrise / ends after sunset
+GH_TRAIL = dt.timedelta(minutes=40)  # golden band ends this far after sunrise / starts before sunset
+MIN_BAND = dt.timedelta(hours=1)     # each transition band is at least this wide
+DUSK_MIN = dt.timedelta(minutes=30)  # evening deeper-blue frame gets at least this long
+ZINFO = ZoneInfo(TZ)
+
+
+def _sun(date):
+    loc = LocationInfo(name="Phoenix", region="US", timezone=TZ,
+                       latitude=LAT, longitude=LON)
+    return sun(loc.observer, date=date, tzinfo=ZINFO)
+
+
+def _widen_to(start, end, minimum, anchor):
+    """Ensure [start,end) spans >= minimum, growing symmetrically around anchor."""
+    span = end - start
+    if span >= minimum:
+        return start, end
+    grow = (minimum - span) / 2
+    return anchor - (anchor - start) - grow, anchor + (end - anchor) + grow
+
+
+def compute_schedule(now):
+    """Return an ordered list of (start, end, phase_label, frame_key) for the day
+    containing `now`, plus the next-day dawn_start so NIGHT after dusk has an end."""
+    today = now.date()
+    s = _sun(today)
+    sunrise, sunset = s["sunrise"], s["sunset"]
+    astral_dawn, astral_dusk = s["dawn"], s["dusk"]  # civil dawn / civil dusk
+
+    # --- MORNING golden band, anchored on sunrise, widened to >= 1h ---
+    m_start = sunrise - GH_LEAD
+    m_end = sunrise + GH_TRAIL
+    # If astral civil-dawn window (dawn..sunrise) is short (<1h to sunrise), we still
+    # keep the golden anchor; widen the whole band to >= MIN_BAND around sunrise.
+    m_start, m_end = _widen_to(m_start, m_end, MIN_BAND, sunrise)
+
+    # --- EVENING golden band, anchored on sunset, widened to >= 1h ---
+    e_start = sunset - GH_TRAIL
+    e_end = sunset + GH_LEAD
+    e_start, e_end = _widen_to(e_start, e_end, MIN_BAND, sunset)
+
+    # --- EVENING deeper-blue civil-twilight band (Dusk frame) ---
+    # From the end of the evening golden band to astral civil dusk, but guarantee
+    # it lasts at least DUSK_MIN (Phoenix civil twilight is ~25min -> would flash).
+    d_start = e_end
+    d_end = max(astral_dusk, d_start + DUSK_MIN)
+    # If a real "blue hour" frame exists, use it for this deeper-blue slot.
+    dusk_key = "blue" if FRAME["blue"].is_file() else "dusk"
+
+    # Tomorrow's morning band start = end of tonight's NIGHT.
+    s_next = _sun(today + dt.timedelta(days=1))
+    next_sunrise = s_next["sunrise"]
+    next_m_start, _ = _widen_to(next_sunrise - GH_LEAD, next_sunrise + GH_TRAIL,
+                                MIN_BAND, next_sunrise)
+
+    # Start-of-day NIGHT ends at this morning's band start; its start is yesterday.
+    s_prev = _sun(today - dt.timedelta(days=1))
+    prev_sunset = s_prev["sunset"]
+    prev_e_end = _widen_to(prev_sunset - GH_TRAIL, prev_sunset + GH_LEAD,
+                           MIN_BAND, prev_sunset)[1]
+    prev_astral_dusk = s_prev["dusk"]
+    prev_d_end = max(prev_astral_dusk, prev_e_end + DUSK_MIN)
+
+    return [
+        (prev_d_end, m_start, "NIGHT (pre-dawn)",            "night"),
+        (m_start,    m_end,   "MORNING golden/twilight",     "dawn"),
+        (m_end,      e_start, "DAY",                         "day"),
+        (e_start,    e_end,   "EVENING golden",              "dawn"),
+        (e_end,      d_end,   "EVENING civil twilight",      dusk_key),
+        (d_end,      next_m_start, "NIGHT (post-dusk)",      "night"),
+    ]
+
+
+def phase_for(now):
+    for start, end, label, key in compute_schedule(now):
+        if start <= now < end:
+            return start, end, label, key
+    # Fallback (shouldn't happen): night.
+    return None, None, "NIGHT (fallback)", "night"
+
+
+def next_transition(now):
+    for start, end, _label, _key in compute_schedule(now):
+        if now < start:
+            return start
+        if start <= now < end:
+            return end
+    # After everything -> tomorrow's first boundary.
+    return compute_schedule(now + dt.timedelta(days=1))[0][1]
+
+
+def _resolve_frame(key):
+    p = FRAME[key]
+    if not p.is_file():
+        # Degrade gracefully to day/night if a specific frame is missing.
+        alt = "day" if key in ("dawn", "day") else "night"
+        sys.stderr.write(f"tahoe-wallpaper-phase: frame missing ({p}); using {alt}\n")
+        p = FRAME[alt]
+    return p
+
+
+def apply(now):
+    start, end, label, key = phase_for(now)
+    frame = _resolve_frame(key)
+    if not frame.is_file():
+        sys.stderr.write(
+            f"tahoe-wallpaper-phase: no frames found under {WPDIR}\n"
+            "  Expected macOS-Tahoe 'Beach' frames (26-Tahoe-Beach-*.png).\n")
+        sys.exit(3)
+    subprocess.run(["plasma-apply-wallpaperimage", str(frame)], check=False)
+    endstr = end.strftime("%H:%M") if end else "?"
+    print(f"applied {label}  ->  {frame.name}   (until {endstr})")
+
+
+def schedule(now):
+    print(f"Tahoe dynamic wallpaper schedule for {now.date()}  "
+          f"(Phoenix {LAT},{LON} {TZ}; no DST)")
+    print(f"  now = {now.strftime('%H:%M:%S %Z')}")
+    s = _sun(now.date())
+    print("  astral raw:  dawn %s  sunrise %s  noon %s  sunset %s  dusk %s" % (
+        s["dawn"].strftime("%H:%M"), s["sunrise"].strftime("%H:%M"),
+        s["noon"].strftime("%H:%M"), s["sunset"].strftime("%H:%M"),
+        s["dusk"].strftime("%H:%M")))
+    civ_am = (s["sunrise"] - s["dawn"])
+    civ_pm = (s["dusk"] - s["sunset"])
+    print("  raw civil twilight:  morning %s   evening %s  "
+          "(<1h -> widened to golden-hour band)" % (
+              _fmt_td(civ_am), _fmt_td(civ_pm)))
+    print("  resolved bands:")
+    cur = phase_for(now)
+    for start, end, label, key in compute_schedule(now):
+        frame = _resolve_frame(key).name
+        mark = "  <== NOW" if (start, end) == (cur[0], cur[1]) else ""
+        print("    %s -> %s  %-26s %s%s" % (
+            start.strftime("%H:%M"), end.strftime("%H:%M"), label, frame, mark))
+    nt = next_transition(now)
+    print("  next transition: %s" % nt.isoformat())
+
+
+def _fmt_td(td):
+    m = int(td.total_seconds() // 60)
+    return f"{m}m"
+
+
+def main():
+    now = dt.datetime.now(ZINFO)
+    mode = sys.argv[1] if len(sys.argv) > 1 else "apply"
+    if mode == "apply":
+        apply(now)
+    elif mode == "schedule":
+        schedule(now)
+    elif mode == "next-time":
+        print(next_transition(now).isoformat())
+    elif mode == "which":
+        print(phase_for(now)[3])
+    else:
+        sys.stderr.write(
+            f"usage: {sys.argv[0]} [apply|schedule|next-time|which]\n")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

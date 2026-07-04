@@ -15,9 +15,17 @@ if command -v plasma-apply-lookandfeel >/dev/null 2>&1; then
   plasma-apply-lookandfeel --apply "$LNF_DARK" --resetLayout
   echo "==> Applied look-and-feel + macOS panel layout: $LNF_DARK"
 
-  # Panel metrics -> macOS: thin flush menu bar (token menuBar.height 31px) and a
-  # floating, always-visible dock. NOTE: Plasma flattens the dock's float gap only
-  # under a *maximized* window (KWin engine limit — no always-float toggle exists).
+  # Panel behavior -> macOS (verified against plasma-workspace panelview.cpp / Panel.qml):
+  #   * menu bar: flush (floating=false), thin (~31px token).
+  #   * dock: floating, macOS-style. Visibility "none"/NormalPanel(0) => reserves a strut
+  #     (setExclusiveZone(thickness) in panelview.cpp) so a MAXIMIZED window stops ABOVE the
+  #     dock, leaving a wallpaper gap at the bottom (the real macOS look). It stays floating
+  #     + translucent because the window never touches the panel rect, so Panel.qml's
+  #     `touchingWindow` de-float/opaque trigger never fires. (WindowsGoBelow(3) reserved no
+  #     strut → window slid UNDER the dock → no wallpaper gap; that was the earlier compromise.)
+  #   * opacityMode Translucent(2): both panels stay CLEAR even when a window touches them
+  #     (Adaptive default turns them opaque on touch). The real key is `panelOpacity` in
+  #     ~/.config/plasmashellrc [PlasmaViews][Panel <id>] — NOT `opacityMode`, NOT appletsrc.
   if command -v "${QDBUS:-qdbus6}" >/dev/null 2>&1; then
     sleep 2   # let plasmashell finish rebuilding panels from the reset layout
     "${QDBUS:-qdbus6}" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript '
@@ -26,14 +34,15 @@ if command -v plasma-apply-lookandfeel >/dev/null 2>&1; then
         if (p.location == "top")    { p.floating = false; p.height = 30; }
         if (p.location == "bottom") { p.floating = true;  p.hiding = "none"; }
       }' >/dev/null 2>&1 || true
-    # Panels default to Adaptive opacity -> they go solid/opaque (dark, on a dark
-    # scheme) whenever ANY window is maximized. Force Translucent (2) so the menu bar
-    # and dock stay frosted. Keyed by panel containment id; applies on next reload.
-    for _pid in $("${QDBUS:-qdbus6}" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript \
-        'var s="";var ps=panels();for(var i=0;i<ps.length;i++){s+=ps[i].id+" ";}print(s);' 2>/dev/null | grep -v qt.svg); do
-      "${KWRITECONFIG:-kwriteconfig6}" --file plasma-org.kde.plasma.desktop-appletsrc \
-        --group Containments --group "$_pid" --group General --key panelOpacity 2
-    done
+    # Persist opacity (both) + visibility (dock=NormalPanel/0 → reserves strut → wallpaper
+    # gap under maximized windows) to plasmashellrc, the file PanelView actually reads.
+    _pairs=$("${QDBUS:-qdbus6}" org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript \
+      'var o="";panels().forEach(function(p){o+=p.location+" "+p.id+"\n";});print(o);' 2>/dev/null | grep -vE 'qt.svg|^$' || true)
+    while read -r _loc _id; do
+      [ -n "${_id:-}" ] || continue
+      "${KWRITECONFIG:-kwriteconfig6}" --file plasmashellrc --group PlasmaViews --group "Panel $_id" --key panelOpacity 2 || true
+      [ "$_loc" = "bottom" ] && "${KWRITECONFIG:-kwriteconfig6}" --file plasmashellrc --group PlasmaViews --group "Panel $_id" --key panelVisibility 0 || true
+    done <<< "$_pairs"
   fi
 else
   echo "!! plasma-apply-lookandfeel missing"; exit 1

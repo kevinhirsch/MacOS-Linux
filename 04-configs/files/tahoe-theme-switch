@@ -109,8 +109,10 @@ def _contrast_on() -> bool:
 
 def apply_light():
     scheme = SCHEME_LIGHT_CONTRAST if _contrast_on() else SCHEME_LIGHT
-    _run(["plasma-apply-colorscheme", scheme])
+    # look-and-feel FIRST — it re-stamps its own (stock MacTahoeLight) color scheme,
+    # so apply OUR calibrated scheme AFTER it or it gets clobbered.
     _run(["plasma-apply-lookandfeel", "--apply", LNF_LIGHT])
+    _run(["plasma-apply-colorscheme", scheme])
     _kwrite("kvantum.kvconfig", "General", "theme", KVANTUM_LIGHT)
     # Re-pin Kvantum as the widget style (L&F apply can reset it).
     _kwrite("kdeglobals", "KDE", "widgetStyle", "kvantum")
@@ -121,8 +123,9 @@ def apply_light():
 
 
 def apply_dark():
-    _run(["plasma-apply-colorscheme", SCHEME_DARK])
+    # look-and-feel FIRST — see apply_light(): apply our scheme AFTER it wins.
     _run(["plasma-apply-lookandfeel", "--apply", LNF_DARK])
+    _run(["plasma-apply-colorscheme", SCHEME_DARK])
     _kwrite("kvantum.kvconfig", "General", "theme", KVANTUM_DARK)
     _kwrite("kdeglobals", "KDE", "widgetStyle", "kvantum")
     _apply_static_wallpaper("MacTahoe-Dark")
@@ -131,7 +134,16 @@ def apply_dark():
 
 
 def _apply_static_wallpaper(pkg: str):
-    """Only swap if the user applied a static image (dynamic pkg self-switches)."""
+    """WALLPAPER is now owned by the finer-grained 4-phase engine
+    (tahoe-wallpaper-phase), which supersedes this 2-state swap so the two do not
+    overwrite each other. THEME (light/dark) switching stays here; we just delegate
+    the wallpaper to the phase engine when installed. If it is absent, fall back to
+    the legacy 2-state static swap so nothing regresses without the dynamic set up.
+    """
+    phase = Path.home() / ".local" / "bin" / "tahoe-wallpaper-phase"
+    if phase.is_file() and os.access(phase, os.X_OK):
+        _run([str(phase), "apply"])
+        return
     img = (Path(os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share")))
            / "wallpapers" / pkg / "contents" / "images" / "3840x2160.jpeg")
     if img.is_file():

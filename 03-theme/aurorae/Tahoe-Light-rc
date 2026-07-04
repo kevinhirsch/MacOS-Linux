@@ -26,9 +26,9 @@ Blur=false
 Animation=1
 
 [Layout]
-BorderLeft=1
-BorderRight=1
-BorderBottom=1
+BorderLeft=0
+BorderRight=0
+BorderBottom=0
 BorderTop=0
 TitleHeight=16
 TitleEdgeTop=8

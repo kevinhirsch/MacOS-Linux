@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# tahoe-wallpaper-rearm — schedule a precise one-shot run at the next wallpaper
+# phase boundary. Called by tahoe-wallpaper-phase.service (ExecStartPost). Uses
+# `systemd-run --user` to create a transient timer that fires exactly at the next
+# dawn/day/golden/dusk/night boundary, so the wallpaper is minute-accurate and
+# self-adjusts across the year without editing unit files. The static
+# tahoe-wallpaper-phase.timer remains as a safety net.
+set -euo pipefail
+
+ENGINE="$HOME/.local/bin/tahoe-wallpaper-phase"
+[[ -x "$ENGINE" ]] || { echo "tahoe-wallpaper-rearm: $ENGINE not found"; exit 1; }
+
+NEXT="$("$ENGINE" next-time)"   # ISO-8601, e.g. 2026-07-04T19:01:36-07:00
+[[ -n "$NEXT" ]] || { echo "tahoe-wallpaper-rearm: could not compute next boundary"; exit 1; }
+
+# Cancel any prior transient re-arm timer, then create a fresh one.
+systemctl --user stop tahoe-wallpaper-rearm-oneshot.timer 2>/dev/null || true
+
+# systemd calendar form "YYYY-MM-DD HH:MM:SS" (drop tz offset + subseconds; local time).
+CAL="$(date -d "$NEXT" '+%Y-%m-%d %H:%M:%S')"
+
+systemd-run --user \
+  --unit=tahoe-wallpaper-rearm-oneshot \
+  --on-calendar="$CAL" \
+  --timer-property=AccuracySec=1s \
+  "$ENGINE" apply
+
+echo "tahoe-wallpaper-rearm: next wallpaper phase armed for $CAL (from $NEXT)"

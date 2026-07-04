@@ -1,0 +1,22 @@
+[Unit]
+Description=Tahoe Beach — fire at the next dynamic-wallpaper phase boundary
+Documentation=file:%h/Desktop/MacOS-Linux/04-configs/README.md
+
+[Timer]
+# The precise firing is done by a transient timer that tahoe-wallpaper-rearm
+# rewrites on each run to the next exact sun-phase boundary. These bootstrap
+# OnCalendar values (roughly the golden/twilight/night edges for Phoenix) are a
+# coarse safety net that guarantees the engine runs even before the first re-arm
+# and re-syncs the phase a few times a day if a re-arm is ever skipped.
+OnCalendar=*-*-* 05:00:00
+OnCalendar=*-*-* 06:15:00
+OnCalendar=*-*-* 19:00:00
+OnCalendar=*-*-* 20:00:00
+OnCalendar=*-*-* 20:45:00
+# Catch up if the machine was asleep/off across a boundary.
+Persistent=true
+AccuracySec=1min
+Unit=tahoe-wallpaper-phase.service
+
+[Install]
+WantedBy=timers.target

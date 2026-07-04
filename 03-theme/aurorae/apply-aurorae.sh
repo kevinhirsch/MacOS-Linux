@@ -31,6 +31,24 @@ for v in MacTahoe-Light MacTahoe-Light-1.25x MacTahoe-Light-1.5x; do
   install_rc "$v" "$HERE/Tahoe-Light-rc"
 done
 
+# Install our edited decoration.svg overrides. Two macOS-parity edits baked in:
+#   1) titlebar top corners SQUARED — so the KWin ShapeCorners effect owns a single
+#      clean squircle for the whole window (no titlebar-vs-effect double corner arc).
+#   2) every 1px bevel/hairline edge-line (black/white/gray) on top/left/right/bottom,
+#      active + inactive, zeroed — macOS windows have no outline, only a shadow.
+# The theme's own asymmetric drop-shadow (Shadow=true in the rc) is kept; ShapeCorners
+# clips it to the rounded corner (UseNativeDecorationShadows). See install-rounded-corners.sh.
+if [[ -d "$HERE/decoration-svg" ]]; then
+  echo "==> Installing squared / hairline-free decoration.svg overrides"
+  for v in MacTahoe-Dark MacTahoe-Dark-1.25x MacTahoe-Dark-1.5x \
+           MacTahoe-Light MacTahoe-Light-1.25x MacTahoe-Light-1.5x; do
+    ovr="$HERE/decoration-svg/$v/decoration.svg"; dir="$AUR_DIR/$v"
+    [[ -f "$ovr" && -d "$dir" ]] || continue
+    cp -f "$ovr" "$dir/decoration.svg"
+    echo "   squared + de-lined $dir/decoration.svg"
+  done
+fi
+
 # Bump each theme's version so KWin invalidates its SVG/geometry cache.
 for d in "$AUR_DIR"/MacTahoe-*; do
   [[ -f "$d/metadata.desktop" ]] || continue

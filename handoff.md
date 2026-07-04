@@ -30,14 +30,25 @@ Ran the install on the real Plasma-6 box. Phase A applied but the stock scripts
 produced a **non-macOS desktop**; fixed live and now at strong Tahoe parity (menu
 bar + floating dock + macOS icons/cursors + frost + SF Pro all verified on screen).
 **Fixes (cmake ones baked into repo; theme/config ones still live-only unless noted):**
-- **⚠⚠ NVIDIA + Wayland = flashing gray-line artifacts → YOU MUST BE ON X11.** Kubuntu 26
-  installs ONLY `plasma-session-wayland` by default; there is no X11 session out of the
-  box. On this box (Intel iGPU + 2× RTX 2080 Ti) the Wayland session flashes gray-line
-  artifacts on screen updates, badly with KWin blur on. The whole project ASSUMED X11 but
-  it was never installed. **Fix: `sudo apt install plasma-session-x11 kwin-x11` → log out
-  → pick "Plasma (X11)" at SDDM.** On X11 the artifacts vanish and blur/frost works. If a
-  fresh session sees flashing or a "solid, no-frost" desktop, check `echo $XDG_SESSION_TYPE`
-  first — if it says `wayland`, that's the bug, not the theme.
+- **⚠⚠ NVIDIA hybrid box — flashing gray-line artifacts (CONFIRMED FIX 2026-07-04).**
+  This box = Intel iGPU (`card1`) + 2× RTX 2080 Ti (`card0`/`card2`); the monitor is on the
+  Intel iGPU (`card1-HDMI-A-2`), leaving both NVIDIA GPUs free for vLLM. Symptom: gray-line
+  junk flashing in just-updated screen regions (streaming text / typing). **Root cause = a
+  KWin partial-repaint / buffer-age bug on this Intel-Mesa-26 / kernel-7.0 / triple-GPU
+  stack. THE FIX — force full-screen repaints:**
+  `echo 'KWIN_USE_BUFFER_AGE=0' > ~/.config/environment.d/71-kwin-fullrepaint.conf` then log
+  out/in once. That alone fixes it, and blur/frost can then stay ON with no artifacts.
+  - **Red herrings — do NOT chase these:** disabling blur or `AllowTearing` did NOT fix it;
+    forcing the Intel GPU via `KWIN_DRM_DEVICES` made it WORSE (that tweak was removed). Do
+    still keep `kwinrc [Compositing] AllowTearing=false` — KWin 6 defaults it true; off is
+    strictly better for a desktop.
+  - X11 is NOT a simple alternative here: `plasma-session-x11 + kwin-x11` are installed, but
+    the X11 Plasma session crashes on the hybrid PRIME-offload GLX path (Xorg starts fine on
+    the Intel display — "terminated successfully (0)" — then plasma exits → black screen →
+    back to SDDM). Only viable if you physically move the monitor to a 2080 Ti output +
+    `sudo prime-select nvidia` (which dedicates one GPU to the display).
+  - Fresh session flashing again? Check `~/.config/environment.d/71-kwin-fullrepaint.conf`
+    exists and `echo $XDG_SESSION_TYPE` (should be `wayland`).
 - **Icons + cursors were never installed.** `MacTahoe-kde` ships no icons/cursors —
   also install `vinceliuice/MacTahoe-icon-theme` (icons) + its `cursors/`. Cursors
   land in `~/.local/share/icons` but Xcursor only searches `~/.icons:/usr/share/icons`

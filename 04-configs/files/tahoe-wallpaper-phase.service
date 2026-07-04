@@ -1,0 +1,18 @@
+[Unit]
+Description=Tahoe Beach — apply the sun-driven 4-phase dynamic wallpaper
+Documentation=file:%h/Desktop/MacOS-Linux/04-configs/README.md
+# Only meaningful inside a running Plasma graphical session.
+After=plasma-plasmashell.service graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+# Apply the correct frame for right now...
+ExecStart=%h/.local/bin/tahoe-wallpaper-phase apply
+# ...then re-arm a transient timer for the NEXT phase boundary.
+ExecStartPost=%h/.local/bin/tahoe-wallpaper-rearm
+# plasma-apply-wallpaperimage needs the session bus + display; the user manager
+# provides them. No plasmashell restart required.
+
+[Install]
+WantedBy=graphical-session.target
