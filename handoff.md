@@ -43,7 +43,8 @@ git clone https://github.com/kevinhirsch/MacOS-Linux && cd MacOS-Linux
 ./install.sh --glass-deps                     # auto-detects Plasma 6: Phase A +
                                               #  builds & enables the KWin 6 refraction effect
 ```
-Then log out → pick the Plasma session, and run the **parity loop** (dock, toolbar, Settings).
+Then **log out → pick the Plasma session.**
+
 After it's applied, run the **parity loop** on Kevin's three priority surfaces —
 **dock, toolbar, Settings window**: render → compare against
 `corpus/screenshots/` → tune `tokens/tahoe.json` → rebuild. Exact targets already
