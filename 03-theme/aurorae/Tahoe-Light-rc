@@ -1,0 +1,57 @@
+# ============================================================================
+# Tahoe-Liquid-Glass · Aurorae LIGHT rc  (installs as MacTahoe-Light<scale>rc)
+# ----------------------------------------------------------------------------
+# Same retuned metrics as Tahoe-Dark-rc; only the tab/text colors differ.
+#   traffic lights LEFT (XIA) · 14pt diameter · 24pt center-to-center · 26pt inset
+# ============================================================================
+
+[General]
+ActiveFocusedTabColor=78,78,78
+ActiveTextColor=68,68,68
+ActiveUnfocusedTabColor=120,120,120
+InactiveFocusedTabColor=120,120,120
+InactiveTextColor=177,177,177
+InactiveUnfocusedTabColor=120,120,120
+ActiveTextShadowColor=0,0,0,255
+InactiveTextShadowColor=0,0,0,255
+TitleAlignment=Center
+TitleVerticalAlignment=Center
+UseTextShadow=true
+TextShadowOffsetX=0
+TextShadowOffsetY=1
+LeftButtons=XIA
+RightButtons=
+Shadow=true
+Blur=false
+Animation=1
+
+[Layout]
+BorderLeft=1
+BorderRight=1
+BorderBottom=1
+BorderTop=0
+TitleHeight=16
+TitleEdgeTop=8
+TitleEdgeBottom=8
+TitleEdgeLeft=19
+TitleEdgeRight=16
+TitleBorderLeft=50
+TitleBorderRight=50
+ButtonWidth=14
+ButtonHeight=14
+ButtonSpacing=10
+ButtonMarginTop=7
+ButtonMarginLeft=0
+ButtonMarginRight=0
+ExplicitButtonSpacer=0
+ButtonWidthClose=14
+ButtonWidthMinimize=14
+ButtonWidthMaximizeRestore=14
+PaddingTop=21
+PaddingBottom=59
+PaddingRight=41
+PaddingLeft=41
+TitleEdgeTopMaximized=8
+TitleEdgeBottomMaximized=8
+TitleEdgeLeftMaximized=19
+TitleEdgeRightMaximized=16

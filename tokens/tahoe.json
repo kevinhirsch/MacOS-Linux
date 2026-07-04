@@ -1,0 +1,178 @@
+{
+  "$meta": {
+    "name": "tahoe-liquid-glass-ubuntu tokens",
+    "purpose": "Single machine-readable source of truth. Theme, KWin effect, and configs all read from here.",
+    "substrate": "KDE Plasma 6 + custom KWin OpenGL effect (pixel-parity Liquid Glass is compositor-level)",
+    "provenance": "apple = Apple-documented/design-figure; measured = our screenshot measurement @2x; derived = computed via the concentric rule; estimate = reconstruction; figma-community = exact from the 'macOS 26 (Community)' Figma kit (expert reproduction, NOT Apple-official) — see parity/figma-extract.md",
+    "note": "Apple deliberately does NOT publish most pixel values (WWDC310: use Auto Layout). Numbers here are measured or Apple-figure; the RULES are the corpus payload.",
+    "units": "pt = logical points (~2px @2x retina); px = physical pixels",
+    "companions": ["../parity (reference shots)", "calibration sheet + rulebook artifacts"]
+  },
+
+  "geometry": {
+    "corner.style":            { "value": "continuous", "conf": "apple", "note": "squircle profile (.continuous), not a plain rounded rect" },
+    "squircle.heightField":    { "value": "y = (1-(1-x)^4)^(1/4)", "conf": "apple", "consumers": ["glass-effect"], "note": "Apple refraction/corner curve; drop into the shader displacement" },
+    "squircle.exponent":       { "value": 4, "unit": "n", "conf": "measured", "note": "superellipse approximation; true corner is Bezier (figma-squircle path for exact)" },
+    "window.radius.titlebar":       { "value": 16, "unit": "pt", "conf": "apple", "note": "Apple 'Window corners' figure + measured" },
+    "window.radius.compactToolbar": { "value": 20, "unit": "pt", "conf": "apple" },
+    "window.radius.toolbar":        { "value": 26, "unit": "pt", "conf": "apple", "note": "measured ~24, validated within 2pt; NSGlassEffectView.cornerRadius" },
+    "shape.types":             { "value": ["fixed", "capsule = radius:height/2", "concentric = radius:parent-padding"], "conf": "apple", "note": "WWDC356 — the geometry Apple DOES publish" },
+    "concentricity.rule":      { "value": "inner = outer - inset", "conf": "apple", "note": "nested radii derive from container; far-from-edge corners -> 0" },
+    "trafficLight.diameter":   { "value": 14, "unit": "pt", "conf": "measured", "note": "28px @2x across 27 windows, zero deviation" },
+    "trafficLight.spacing":    { "value": 24, "unit": "pt", "conf": "measured", "note": "center-to-center consensus (n=27)" },
+    "trafficLight.inset":      { "value": 26, "unit": "pt", "conf": "measured", "note": "control-center from window edge (n=27)" }
+  },
+
+  "controls": {
+    "button.medium":     { "value": 24, "unit": "pt", "conf": "measured", "note": "rounded rect, corner ~4-5pt; taller than classic 21pt" },
+    "button.large":      { "value": 28, "unit": "pt", "conf": "measured", "note": "capsule, radius = height/2 = 14pt" },
+    "control.minSize":   { "value": [28, 20], "unit": "pt", "conf": "apple", "note": "HIG a11y: 28x28 default / 20x20 min visual (hit target still 44)" },
+    "control.shape":     { "value": "rounded-rect <=medium, capsule >=large", "conf": "apple" },
+    "control.sizeTiers": { "value": ["mini", "small", "medium", "large", "extra-large"], "conf": "apple", "note": "XL is new in Tahoe" },
+    "capsule.radius":    { "value": 999, "conf": "apple", "note": "NSGlassEffectView capsule value (fully rounded)" },
+    "slider.thumb":      { "value": 19, "unit": "pt", "conf": "apple", "note": "no ticks (25 with ticks); round thumb 15" },
+    "checkbox_radio":    { "value": 14, "unit": "pt", "conf": "apple" },
+    "switch":            { "value": "32x21", "unit": "pt", "conf": "measured", "note": "knob ~17" },
+    "textField":         { "value": "21-22", "unit": "pt", "conf": "estimate", "note": "corner ~3-4" },
+    "control.cornerRadius": { "value": 12, "unit": "pt", "conf": "estimate", "note": "panels/dialogs, up from Sequoia's ~4-8" },
+    "tint.prominence":   { "value": ["automatic", "none", "secondary", "primary"], "conf": "apple", "note": "tint the BACKGROUND never the label; destructive = red @ secondary" }
+  },
+
+  "layout": {
+    "menuBar.height":        { "value": 31, "unit": "px", "conf": "measured", "note": "Tahoe; Apple HIG nominal 24pt; Sequoia was 25px" },
+    "menu.itemHeight":       { "value": 24, "unit": "pt", "conf": "measured", "note": "48px x 7 uniform @2x" },
+    "toolbar.height":        { "value": "50-52", "unit": "pt", "conf": "measured", "note": "traffic-center proxy on Finder+Settings" },
+    "sheet.cornerRadius":    { "value": 26, "unit": "pt", "conf": "figma-community", "note": "macOS 26 kit Sheet/Dialog/Alert body = r26 (our screenshot measure said ~20; kit says 26)" },
+    "menu.cornerRadius":     { "value": 13, "unit": "pt", "conf": "figma-community", "note": "kit menu container" },
+    "popover.cornerRadius":  { "value": 20, "unit": "pt", "conf": "figma-community" },
+    "notification.cornerRadius": { "value": 16, "unit": "pt", "conf": "figma-community", "note": "banner" },
+    "sidebarCard.cornerRadius":  { "value": 18, "unit": "pt", "conf": "figma-community" },
+    "dock.cornerRadius":     { "value": 15, "unit": "pt", "conf": "figma-community", "note": "dock background rect" },
+    "glass.sampleRadius":    { "value": 34, "unit": "pt", "conf": "figma-community", "note": "Liquid Glass medium/large 160pt sample; small element = capsule" },
+    "sidebar.width":         { "value": "225-275", "unit": "pt", "conf": "derived", "note": "resizable range; measured 238-263 in-range" },
+    "dock.iconSize":         { "value": 48, "unit": "px", "conf": "apple", "note": "com.apple.dock tilesize default; range 16-128" },
+    "dock.magnifiedSize":    { "value": 128, "unit": "px", "conf": "apple" },
+    "card.cornerRadius":     { "value": 9, "unit": "pt", "conf": "measured", "note": "grouped list card; inner container" },
+    "list.rowHeight":        { "value": 44, "unit": "pt", "conf": "measured" },
+    "sidebar.selectionHeight": { "value": 33, "unit": "pt", "conf": "measured" },
+    "scrollbar.width":       { "value": 15, "unit": "pt", "conf": "apple", "note": "overlay scroller (11 small)" },
+    "focusRing.width":       { "value": 3, "unit": "pt", "conf": "estimate" },
+    "spacing.grid":          { "value": 8, "unit": "pt", "conf": "apple", "note": "convention, 4pt half-steps" },
+    "hitTarget.min":         { "value": 44, "unit": "pt", "conf": "apple" },
+    "control.padding":       { "value": [12, 24], "unit": "pt", "conf": "apple", "note": "12 bezeled / 24 bezel-less" }
+  },
+
+  "material": {
+    "tiers":              { "value": ["ultraThin", "thin", "regular", "thick", "ultraThick"], "conf": "apple", "note": "content-layer standard materials" },
+    "tint.light":         { "value": { "ultraThin": "#F6F6F6@36%", "thin": "#F6F6F6@48%", "regular": "#F6F6F6@60%", "thick": "#F6F6F6@72%", "ultraThick": "#F6F6F6@84%" }, "conf": "figma-community", "consumers": ["glass-effect","theme"], "note": "vibrancy tiers, tint #F6F6F6 + 30px backdrop blur (macOS 26 kit)" },
+    "tint.dark":          { "value": { "ultraThin": "#000000@10%", "thin": "#000000@20%", "regular": "#000000@29%", "thick": "#000000@40%", "ultraThick": "#000000@50%" }, "conf": "figma-community", "consumers": ["glass-effect","theme"], "note": "dark vibrancy tiers, tint #000000 + 30px backdrop blur" },
+    "variants":           { "value": ["Regular", "Clear"], "conf": "apple", "note": "Regular = adaptive default; Clear = transparent, media-rich only" },
+    "clear.dimming":      { "value": 0.35, "conf": "apple", "note": "dark layer over BRIGHT media only (localized for small footprints)" },
+    "mechanism":          { "value": "lensing + specular + adaptive shadow", "conf": "apple", "consumers": ["glass-effect"], "note": "refraction, NOT scatter-blur" },
+    "vibrancy.blend":     { "value": "luminosity", "conf": "apple", "note": "keep fg lightness, pull hue/sat from backdrop; labels 4 / fills 3 / separators 1" },
+    "adaptiveInk.flip":   { "value": "light<->dark @ Y~0.36", "conf": "apple", "consumers": ["glass-effect"], "note": "SMALL elements flip as a unit; LARGE elements (menus/sidebars) mute, never flip" },
+    "glass.morphSpacing": { "value": 40, "unit": "pt", "conf": "apple", "note": "shapes blend when edges within container spacing" },
+    "glass.figma":        { "value": { "lightAngle": -45, "lightIntensity": 0.67, "refraction": 100, "depth": 16, "dispersion": 0, "splay": 6 }, "conf": "figma-community", "consumers": ["glass-effect"], "note": "Figma native Glass effect, CONSTANT across sizes (macOS 26 kit; REST API hides these, read from canvas). Map: refraction->IOR bend, depth->thickness, dispersion->chromatic aberration, splay->edge spread, light->specular angle/intensity" },
+    "glass.frost":        { "value": { "small": 7, "medium": 12, "large": 14 }, "unit": "px", "conf": "figma-community", "consumers": ["glass-effect"], "note": "backdrop blur radius; the ONLY glass param that scales with element size (control/panel/window)" },
+    "glass.tint.medium":  { "value": "#F5F5F5@67% over #262626@100%", "conf": "figma-community", "consumers": ["glass-effect"], "note": "Liquid Glass Medium/Light tint stack; glass-layer fill #000@20%; element shadow 0/8/40 #000@12%" },
+    "glass.ior":          { "value": 2.4, "conf": "estimate", "consumers": ["glass-effect"], "note": "shader refract() IOR; tune so lensing reads like Figma refraction=100" },
+    "glass.specular":     { "value": 0.5, "unit": "shaderU", "conf": "estimate", "consumers": ["glass-effect"], "note": "Blinn; drive angle from glass.figma.lightAngle (-45deg)" },
+    "glass.chromatic":    { "value": 0.15, "unit": "shaderU", "conf": "estimate", "consumers": ["glass-effect"], "note": "keep subtle; Figma dispersion=0 in this kit" },
+    "blur.sigma":         { "value": 30, "unit": "px", "conf": "figma-community", "consumers": ["glass-effect"], "note": "material backdrop blur, constant across vibrancy tiers; glass FROST (7/12/14) is a separate, size-scaled blur" },
+    "menuBar.translucency": { "value": "transparent by default", "conf": "apple" }
+  },
+
+  "type": {
+    "family.ui":        { "value": "SF Pro Text", "conf": "apple", "note": "<=19pt optical" },
+    "family.display":   { "value": "SF Pro Display", "conf": "apple", "note": ">=20pt optical" },
+    "opticalCrossover": { "value": 20, "unit": "pt", "conf": "apple" },
+    "ramp": {
+      "largeTitle":  { "size": 26, "leading": 32, "weight": "Regular" },
+      "title1":      { "size": 22, "leading": 26, "weight": "Regular" },
+      "title2":      { "size": 17, "leading": 22, "weight": "Regular" },
+      "title3":      { "size": 15, "leading": 20, "weight": "Regular" },
+      "headline":    { "size": 13, "leading": 16, "weight": "Bold" },
+      "body":        { "size": 13, "leading": 16, "weight": "Regular" },
+      "callout":     { "size": 12, "leading": 15, "weight": "Regular" },
+      "subheadline": { "size": 11, "leading": 14, "weight": "Regular" },
+      "footnote":    { "size": 10, "leading": 13, "weight": "Regular" },
+      "caption1":    { "size": 10, "leading": 13, "weight": "Regular" },
+      "caption2":    { "size": 10, "leading": 13, "weight": "Medium" }
+    },
+    "ramp.conf":        "apple",
+    "tracking":         { "value": "size-derived curve", "conf": "estimate", "note": "avoid light weights; Regular/Medium/Semibold/Bold" },
+    "tahoeChange":      { "value": "unchanged", "conf": "apple", "note": "redesign is material, not metrics" }
+  },
+
+  "shadow": {
+    "dynamic":          { "value": "focus + backdrop adaptive", "conf": "apple", "note": "opacity up over text, down over solid light bg; recede on unfocus. Bake TWO states." },
+    "system":           { "value": {
+        "card":         "0 8 40 0 rgba(0,0,0,0.12)",
+        "window":       "0 16 48 0 rgba(0,0,0,0.35) + 0 0 0 1 rgba(0,0,0,0.23)",
+        "sheet":        "0 16 48 0 rgba(0,0,0,0.35) + 0 0 0 1 rgba(0,0,0,0.23)",
+        "dialog":       "0 16 48 0 rgba(0,0,0,0.35) + 0 0 0 1 rgba(0,0,0,0.23)",
+        "alert":        "0 17 45 0 rgba(0,0,0,0.50) + 0 0 1 0 rgba(0,0,0,0.20)",
+        "menu":         "0 0 25 0 rgba(0,0,0,0.16) + 0 0 2 0 rgba(0,0,0,0.10)",
+        "popover":      "0 8 15 6 rgba(0,0,0,0.18) + 0 2 4 0 rgba(0,0,0,0.15)",
+        "notification": "0 8 40 0 rgba(0,0,0,0.12)",
+        "sidebarCard":  "0 8 40 0 rgba(0,0,0,0.12)",
+        "dock":         "0 0 0 1 rgba(0,0,0,0.20) + 0 0 6 0 rgba(0,0,0,0.15)"
+      }, "conf": "figma-community", "consumers": ["theme","glass-effect"], "note": "exact from macOS 26 kit; format: x y blur spread color. Two-layer = ambient + contour" },
+    "topEdge.highlight":{ "value": "inset 0 0.5 1 0.5 rgba(255,255,255,0.5)", "conf": "figma-community", "note": "popover top-edge inner highlight (kit value; was estimate 0.6)" },
+    "elevation.model":  { "value": "card/sidebar/notification (@12%) < menu/popover < window/sheet/dialog (@35%) < alert (@50%)", "conf": "figma-community", "note": "SIZE + modality drive depth; no dp scale" },
+    "source":           "figma-community: exact layers from the macOS 26 kit. Apple-official Figma kit would confirm/refine."
+  },
+
+  "icon": {
+    "canvas":  { "value": "1024x1024", "unit": "px", "conf": "apple", "note": "Icon Composer grid" },
+    "shape":   { "value": "continuous rounded rect (.continuous)", "conf": "apple", "note": "not a pure superellipse" },
+    "radius":  { "value": "~18%", "conf": "estimate", "note": "Big Sur baseline; Tahoe rounder + enforced, exact % unpublished" },
+    "layers":  { "value": "1 background + 1+ foreground (up to 4 depth groups)", "conf": "apple" },
+    "modes":   { "value": ["default", "dark", "clear", "tinted"], "conf": "apple", "note": "4 named (6 with light/dark splits)" }
+  },
+
+  "motion": {
+    "baseline":         { "value": 0.25, "unit": "s", "conf": "apple", "note": "AppKit NSAnimationContext default" },
+    "spring.presetDuration": { "value": 0.5, "unit": "s", "conf": "apple", "note": "smooth/snappy/bouncy share 0.5s; bounce 0/0.15/0.3" },
+    "spring.smooth":      { "value": "AdwSpringParams(1.0, 1, 158)", "conf": "apple", "consumers": ["gtk4-apps"], "note": "SwiftUI .smooth" },
+    "spring.snappy":      { "value": "AdwSpringParams(0.85, 1, 158)", "conf": "apple", "consumers": ["gtk4-apps"] },
+    "spring.bouncy":      { "value": "AdwSpringParams(0.7, 1, 158)", "conf": "apple", "consumers": ["gtk4-apps"] },
+    "spring.default":     { "value": "AdwSpringParams(0.825, 1, 131)", "conf": "apple", "consumers": ["gtk4-apps"], "note": "SwiftUI .spring, response 0.55" },
+    "spring.interactive": { "value": "AdwSpringParams(0.86, 1, 1755)", "conf": "apple", "consumers": ["gtk4-apps"], "note": "gesture-velocity handoff" },
+    "spring.mapping":     { "value": "stiffness=(2pi/response)^2*mass; damping_ratio=dampingFraction", "conf": "apple", "note": "exact SwiftUI->AdwSpringParams" },
+    "feasibility":        { "value": "authentic springs = GTK4 app-code only", "conf": "apple", "note": "NOT themeable; Shell/KWin do easing curves (Back/Elastic)" },
+    "liquidGlass.motion": { "value": "morph/gel, thicker-on-scale, velocity handoff; materialize NOT fade", "conf": "apple", "note": "no numeric constants" }
+  },
+
+  "color": {
+    "accent.default":      { "value": "#007AFF", "conf": "apple", "note": "light control TINT" },
+    "selection.fill":      { "value": "#2962D9", "conf": "measured", "note": "light sidebar selection, deeper than tint" },
+    "focusRing":           { "value": "#007AFF", "conf": "figma-community", "note": "macOS 26 kit: DOUBLE ring 3.5px @25% + 1px @15%, color = accent #007AFF (was est. #0a84ff)" },
+    "systemGray":          { "value": "#98989D", "conf": "figma-community", "note": "kit Colors/Gray" },
+    "accent.palette": {
+      "Blue": "#4380E8", "Purple": "#93359D", "Pink": "#CF6195", "Red": "#C2413C",
+      "Orange": "#D97A39", "Yellow": "#DBB047", "Green": "#66A845", "Graphite": "#85A6C8"
+    },
+    "accent.palette.conf": "measured",
+    "destructive":         { "value": "system red", "conf": "apple", "note": "distinct from palette Red; @ secondary prominence" },
+    "textHighlight.decoupled": { "value": true, "conf": "apple", "note": "separate from accent (new in Tahoe)" },
+    "dark.selection":      { "value": "#0058D0 -> #3C6BD2", "conf": "measured", "note": "semantic base -> rendered through dark glass" },
+    "dark.material":       { "value": "#2B2E31", "conf": "measured", "note": "dark sidebar/card (translucent, shifts with wallpaper)" },
+    "dark.windowBg":       { "value": "#24282A", "conf": "measured" },
+    "appearance.auto":     { "value": "sun-based", "conf": "apple", "note": "matches macOS auto light/dark" }
+  },
+
+  "rules": [
+    "ONE glass plane only: a single floating functional layer over content. Never glass-on-glass (glass can't sample glass). Never glass in the content layer.",
+    "Regular is the default variant everywhere; Clear only over rich media, and only with a 35% dark dim over bright content.",
+    "Concentric nesting: window 16/20/26 -> card 9 -> control; inner radius = parent - padding.",
+    "Tint the BACKGROUND, never text/symbols. One emphasis per context. Color lives in the content layer.",
+    "Small elements + their symbols flip light<->dark @ Y~0.36; large elements (menus/sidebars) mute but never flip.",
+    "Materialize by modulating lensing, not opacity. Larger glass = thicker (deeper shadow, more lensing). Losing focus recedes.",
+    "Menu-bar order: App | File | Edit | Format | View | [app] | Window | Help. Toolbar 3 zones (leading fixed / center overflow / trailing pinned + one prominent). <=3 groups.",
+    "Sidebars float, extend content beneath (background-extension), more opaque at large size. Tab bars = navigation only.",
+    "Reduce custom backgrounds/tints so system glass + scroll-edge drive color.",
+    "Accessibility overrides the optics: Reduce Transparency -> frost; Increase Contrast -> B/W + border (no flip); Reduce Motion -> tighten springs, kill z-depth, transitions->fades. Glass is NEVER load-bearing for legibility.",
+    "Authentic Apple wins: mirror pixel-for-pixel; where there's no Apple element, don't invent one. Restraint is the aesthetic."
+  ]
+}

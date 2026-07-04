@@ -1,0 +1,216 @@
+<title>Tahoe Calibration Sheet</title>
+<style>
+  :root{
+    --ground:#090c12; --card:#0f131b; --line:rgba(255,255,255,.08); --line-strong:rgba(255,255,255,.15);
+    --ink:#e8edf5; --muted:#8b95a7; --faint:#5c6675;
+    --accent:#5ac8fa; --hi:#5fd08a; --med:#f5c451; --lo:#ff8a6b;
+    --ui: ui-sans-serif,-apple-system,"SF Pro Text","Helvetica Neue",Inter,system-ui,sans-serif;
+    --mono: ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+    radial-gradient(1100px 620px at 82% -8%,rgba(90,200,250,.10),transparent 60%),
+    radial-gradient(900px 560px at 6% 108%,rgba(255,138,107,.08),transparent 55%),
+    var(--ground);
+    color:var(--ink);font-family:var(--ui);-webkit-font-smoothing:antialiased;line-height:1.5}
+  .wrap{max-width:1020px;margin:0 auto;padding:46px 24px 80px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+  h1{margin:0;font-size:clamp(28px,4.4vw,44px);font-weight:650;letter-spacing:-.02em;text-wrap:balance}
+  .lede{margin:14px 0 0;color:var(--muted);font-size:15px;max-width:66ch}
+  .lede b{color:var(--ink);font-weight:600}
+  .status{display:inline-flex;align-items:center;gap:8px;margin-top:16px;font-family:var(--mono);font-size:11.5px;
+    color:var(--hi);background:rgba(95,208,138,.09);border:1px solid rgba(95,208,138,.30);border-radius:999px;padding:6px 12px}
+  .status .dot{width:7px;height:7px;border-radius:50%;background:var(--hi);box-shadow:0 0 8px var(--hi)}
+  .legend{display:flex;flex-wrap:wrap;gap:16px;margin:26px 0 8px;padding:14px 16px;border:1px solid var(--line);
+    border-radius:14px;background:rgba(255,255,255,.02)}
+  .legend .grp{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--muted)}
+  .cf{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;font-weight:600}
+  .cf.hi{color:#052; background:rgba(95,208,138,.22);border:1px solid rgba(95,208,138,.5)}
+  .cf.med{color:#3a2b00;background:rgba(245,196,81,.24);border:1px solid rgba(245,196,81,.55)}
+  .cf.lo{color:#3a1400;background:rgba(255,138,107,.22);border:1px solid rgba(255,138,107,.5)}
+  section{margin-top:30px}
+  .sh{display:flex;align-items:baseline;gap:12px;margin:0 0 12px;padding-bottom:9px;border-bottom:1px solid var(--line)}
+  .sh h2{margin:0;font-size:14px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink)}
+  .sh .cnt{font-family:var(--mono);font-size:11px;color:var(--faint)}
+  .card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:linear-gradient(180deg,var(--card),#0c1017)}
+  .tok{display:grid;grid-template-columns:1fr auto;gap:2px 16px;padding:13px 16px;border-top:1px solid var(--line)}
+  .tok:first-child{border-top:none}
+  .tok .name{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+  .tok .val{font-family:var(--mono);font-size:14px;color:var(--accent);text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .tok .val .u{color:var(--faint);font-size:11px;margin-left:3px}
+  .tok .meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap;grid-column:1}
+  .tok .right{grid-column:2;display:flex;justify-content:flex-end;align-items:center;gap:6px}
+  .tok .note{grid-column:1/-1;color:var(--muted);font-size:12px;margin-top:3px}
+  .pill{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--muted);background:rgba(255,255,255,.05);
+    border:1px solid var(--line);border-radius:5px;padding:2px 6px}
+  .foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--faint);font-size:12.5px;max-width:76ch}
+  .foot b{color:var(--muted)}
+  .foot ol{margin:10px 0 0;padding-left:20px} .foot li{margin:4px 0}
+  .foot .src{margin-top:14px;font-family:var(--mono);font-size:11px;color:var(--faint);line-height:1.7}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Material Lab · calibration</p>
+  <h1>Tahoe Calibration Sheet</h1>
+  <p class="lede">The shared source of truth for pixel-parity work — the theme and the <b>Liquid Glass</b> shader both calibrate to these tokens. Values are our own derived measurements or Apple-documented specs, never copies of Apple's assets. When ambiguous, <b>HIG + Tahoe screenshots are ground truth</b>.</p>
+  <div class="status"><span class="dot"></span> Apple-referenced · 6 research threads · measured @2x · 9 dimensions</div>
+
+  <div class="legend">
+    <div class="grp"><span class="cf hi">high</span> Apple-documented / measured</div>
+    <div class="grp"><span class="cf med">med</span> consistent across teardowns</div>
+    <div class="grp"><span class="cf lo">low</span> estimate — verify directly</div>
+  </div>
+
+  <div id="root"></div>
+
+  <p class="foot">
+    <b>The genuinely unclosable few</b> — no screenshot or doc resolves these:
+    <ol>
+      <li>Squircle exactness — closer than first claimed: the corpus gives Apple's height field y=(1−(1−x)⁴)^¼, and figma-squircle reproduces the vector corner; only a real-time SDF stays approximate.</li>
+      <li>Dynamic ink for arbitrary APP text — now fully specified (flip @ Y≈0.36 + luminosity vibrancy) and closable for shell chrome + shader-drawn content; only third-party app-drawn glyphs stay out of reach (Apple auto-applies it to system components only).</li>
+      <li>Exact shadow / focus-ring numbers — Apple ships none; the <b>official Tahoe Figma UI Kit</b> carries the true effect layers if pixel-exact shadows matter.</li>
+      <li>Dark-mode material colors read through translucent glass, so they shift with the wallpaper behind — treat the dark hexes as representative, not absolute.</li>
+    </ol>
+    <span class="src">Sources: Apple HIG (Typography, Materials, Motion, Dark Mode) · WWDC25 sessions 219/310/356/361 · Apple newsroom · SwiftUI + libadwaita docs · 512pixels Aqua Screenshot Library + wallpaper archive · lapcatsoftware / mjtsai / MacRumors teardowns · Icon Composer docs. All entries are derived numeric specs, not reproductions.</span>
+  </p>
+</div>
+
+<script>
+(function(){
+// [name, value, unit, confidence, consumers[], note]
+const T={
+ Geometry:[
+  ["corner.style","continuous","","hi",["shader","kwin","gtk"],"squircle profile — .continuous rounded rect, not a plain rounded rect"],
+  ["window.radius.titlebar","16","pt","hi",["gtk","kwin"],"Apple 'Window corners' reference: titlebar window"],
+  ["window.radius.compactToolbar","20","pt","hi",["gtk","kwin"],"Apple reference: compact toolbar window (matches our 27-window mode)"],
+  ["window.radius.toolbar","26","pt","hi",["gtk","kwin"],"Apple reference + NSGlassEffectView.cornerRadius public API on macOS 26"],
+  ["squircle.exponent","≈4","n","med",["shader","kwin"],"approximation — Apple's true corner is continuous Bézier (figma-squircle path reproduces it); SDF stays approximate"],
+  ["squircle.heightField","y=(1−(1−x)⁴)^¼","","hi",["shader"],"Apple's refraction/corner height curve (from the design corpus) — drop-in for the shader displacement map"],
+  ["concentricity.rule","inner = outer − inset","","hi",["gtk","shader"],"nested radii derive from the container; corners far from an edge → 0"],
+  ["shape.types","fixed · capsule · concentric","","hi",["theme","shader"],"WWDC356 — the geometry Apple DOES publish: capsule r = ½ height; concentric r = parent − padding; fixed = constant"],
+  ["trafficLight.diameter","14","pt","hi",["gtk-theme"],"confirmed: 28px @2x across 27 windows, zero deviation"],
+  ["trafficLight.spacing","24","pt","hi",["gtk-theme"],"measured consensus (n=27) center-to-center"],
+  ["trafficLight.inset","26","pt","hi",["gtk-theme"],"measured consensus (n=27) control-center from window edge"]
+ ],
+ Controls:[
+  ["button.medium","24","pt","hi",["gtk","kvantum"],"MEASURED off Tahoe dialogs @2x — rounded rect, corner ≈4–5pt. Taller than classic 21pt (Tahoe grew controls)"],
+  ["button.large","28","pt","hi",["gtk","kvantum"],"MEASURED — alert/large buttons are full CAPSULES (radius = height/2 = 14pt)"],
+  ["control.shape","rect ≤medium · capsule ≥large","","hi",["gtk","kvantum"],"WWDC25: mini/small/medium = rounded rect; large/extra-large = capsule"],
+  ["control.sizeTiers","mini·small·medium·large·XL","","hi",["gtk"],"Tahoe added an Extra-Large tier; prefersCompactControlSizeMetrics reverts to old smaller metrics"],
+  ["tint.prominence","auto · none · secondary · primary","","hi",["kvantum"],"4 levels on buttons + sliders; tint the BACKGROUND never the label; destructive = red @ secondary"],
+  ["capsule.radius","999","","hi",["kwin"],"NSGlassEffectView capsule value (fully rounded); large/XL controls are capsules, ≤medium are rounded rects"],
+  ["slider.thumb","19","pt","hi",["gtk"],"linear slider knob, no ticks (25pt with ticks); round thumb 15pt — archived HIG"],
+  ["checkbox / radio","14","pt","med",["gtk"],"14×14pt regular (radio circular)"],
+  ["switch","32×21","pt","med",["gtk"],"NSSwitch capsule, knob ~17pt (community-measured)"],
+  ["textField","21–22","pt","med",["gtk"],"bezeled field, corner ~3–4pt"],
+  ["popupButton","24","pt","med",["gtk"],"measured — matches medium push-button height"],
+  ["control.cornerRadius","~12","pt","med",["gtk","kvantum"],"panels/dialogs bumped up from Sequoia's ~4–8pt"],
+  ["control.minSize","28 / 20","pt","hi",["gtk"],"HIG Accessibility: 28×28pt default control size, 20×20pt minimum (visual floor; hit target still 44pt)"]
+ ],
+ Layout:[
+  ["menuBar.height","31","px","hi",["just-perfection"],"corroborated: Sequoia 25px → Tahoe 31px"],
+  ["dock.iconSize","48","px","hi",["dash-to-dock"],"com.apple.dock tilesize default; range 16–128"],
+  ["dock.magnifiedSize","128","px","hi",["dash-to-dock"],"GUI slider max; no true parabolic zoom on Linux"],
+  ["card.cornerRadius","9","pt","med",["gtk","kvantum"],"MEASURED grouped list card @2x — inner container, distinct from window radius"],
+  ["list.rowHeight","44","pt","med",["gtk"],"MEASURED Settings list-row pitch @2x"],
+  ["sidebar.selectionHeight","33","pt","med",["gtk"],"MEASURED sidebar selected-row pill height @2x"],
+  ["menu.itemHeight","24","pt","med",["gtk"],"MEASURED Go-menu item pitch @2x — 48px × 7, perfectly uniform"],
+  ["sheet.cornerRadius","20","pt","med",["gtk"],"MEASURED alert/sheet card corner @2x"],
+  ["toolbar.height","~50–52","pt","med",["gtk"],"MEASURED on Finder + Settings @2x (traffic-center proxy) — matches the corpus 'taller Tahoe toolbars'"],
+  ["sidebar.width","225–275","pt","med",["gtk"],"resizable range (min 225–275, max ~350–400); our measured 238–263 sits in-range"],
+  ["scrollbar.width","15","pt","med",["gtk"],"AppKit overlay scroller (11pt small); 16px classic — documented"],
+  ["focusRing.color","accent-tinted","","hi",["gtk"],"NSColor.keyboardFocusIndicatorColor; Tahoe decouples text-highlight from it"],
+  ["focusRing.width","~3–4","pt","lo",["gtk"],"glow offset outside control bounds — unpublished, must measure"],
+  ["spacing.grid","8","pt","med",["all"],"Apple convention (4pt half-steps), not a Tahoe-published spec"]
+ ],
+ Material:[
+  ["material.tiers","ultraThin · thin · regular · thick · ultraThick","","hi",["shader","theme"],"HIG Materials / SwiftUI Material enum"],
+  ["vibrancy.levels","primary › secondary › tertiary › quaternary","","hi",["shader","toolkit"],"foreground contrast tiers; quaternary not for thin materials"],
+  ["liquidGlass.mechanism","lensing + specular + adaptive shadow","","hi",["shader"],"refraction, NOT scatter-blur — validates the shader's refraction pass"],
+  ["material.variants","Regular | Clear","","hi",["shader","theme"],"Regular = adaptive (default, legible anywhere); Clear = permanently transparent, no adaptation"],
+  ["clear.dimming","35%","","hi",["shader"],"Clear variant needs a dark 35%-opacity layer over BRIGHT media (localized for small footprints)"],
+  ["adaptiveInk.flip","light↔dark @ Y≈0.36","","hi",["shader","shell-ext"],"small elements + symbols flip as a unit at backdrop luminance ≈0.36; LARGE elements (menus/sidebars) don't flip"],
+  ["vibrancy.blend","luminosity","","hi",["shader","toolkit"],"keep foreground lightness, pull hue/sat from backdrop ('colored glass'); labels 4 / fills 3 / separators 1 levels"],
+  ["glass.morphSpacing","40","pt","hi",["shader"],"glass shapes blend/merge when their edges are within the container spacing (WWDC / Landmarks example)"],
+  ["glass.rule","one plane · never glass-on-glass","","hi",["shader","kwin"],"glass can't sample glass; a single floating functional layer over content, never in the content layer"],
+  ["menuBar.translucency","transparent by default","","hi",["just-perfection"],"Tahoe; optional 'Show Menu Bar Background'"],
+  ["glass.refraction","0.75","u","lo",["shader"],"lensing magnitude; motion-dependent — tune in the Lab"],
+  ["glass.specular","0.5","u","lo",["shader"],"subtle rim highlight"],
+  ["glass.chromatic","0.15","u","lo",["shader"],"barely-there edge fringe"],
+  ["blur.sigma","24","px","lo",["blur-my-shell","kwin"],"frost approximation; real mechanism is lensing"]
+ ],
+ Type:[
+  ["family.ui","SF Pro Text","","hi",["gtk","qt","electron"],"installed + wired; ≤19pt optical"],
+  ["family.display","SF Pro Display","","hi",["headings"],"≥20pt optical (variable-font continuous axis; 20pt is the discrete threshold)"],
+  ["largeTitle","26 / 32","pt","hi",["type-ramp"],"size / leading · Regular (macOS values — half iOS)"],
+  ["title1 / 2 / 3","22/26 · 17/22 · 15/20","pt","hi",["type-ramp"],"Regular; emphasized = Bold/Semibold"],
+  ["headline","13 / 16","pt","hi",["type-ramp"],"Bold"],
+  ["body","13 / 16","pt","hi",["gtk"],"Regular — the default UI body (NSFont.systemFontSize)"],
+  ["callout / subhead","12/15 · 11/14","pt","hi",["type-ramp"],"Regular"],
+  ["footnote / caption","10 / 13","pt","hi",["type-ramp"],"the three smallest share 10/13, differ by weight"],
+  ["tracking","size-derived","","med",["type-ramp"],"Apple derives from SF's optical tracking curve — not per-style published"],
+  ["weight.appName","semibold","","med",["appmenu-is-back"],"app name in the menu bar"],
+  ["ramp.tahoeChange","unchanged","","hi",["type-ramp"],"Tahoe redesign is material, not metrics — the type ramp is untouched"]
+ ],
+ Shadow:[
+  ["shadow.dynamic","focus + backdrop adaptive","","hi",["theme","kwin"],"Apple: shadow opacity drops over light bg; window recedes when unfocused — bake TWO states"],
+  ["window.focused","0 24px 60px .45 + 0 2px 4px .30","","med",["kwin","theme"],"ambient + tight contact layer (teardown consensus)"],
+  ["window.unfocused","≈0 12px 30px .22","","lo",["kwin"],"receded state — Apple documents direction, not magnitude"],
+  ["popover / menu","0 10px 30px .22 + 0.5px hairline","","lo",["gtk"],"tighter than a window; estimate"],
+  ["topEdge.highlight","inset 0 1px 0 rgba(255,255,255,.6)","","med",["gtk"],"AppKit bevel trait seen across teardowns"],
+  ["elevation.model","control < popover < sheet < window","","hi",["theme"],"no dp scale — element SIZE drives shadow depth + refraction"]
+ ],
+ Icon:[
+  ["canvas","1024×1024","px","hi",["icons"],"unified Icon Composer grid (Watch 1088)"],
+  ["shape","continuous rounded rect","","hi",["icons"],"squircle — matched by .continuous at 0px error; a superellipse leaves residual error"],
+  ["radius","~18%","of side","med",["icons"],"Big Sur baseline (~185px on 1024); Tahoe is rounder + ENFORCED, exact % unpublished"],
+  ["layers","4 depth groups","","hi",["icons"],"foreground/mid/background stacked with parallax — per-layer blur/specular/refraction"],
+  ["modes","Default · Dark · Clear-L/D · Tinted-L/D","","hi",["icons"],"6 appearance modes, matching the Clear|Tinted material states"]
+ ],
+ Motion:[
+  ["baseline","0.25","s","hi",["gtk"],"AppKit NSAnimationContext default — the one hard duration constant"],
+  ["spring.presetDuration","0.5","s","hi",["gtk4-apps"],"SwiftUI .smooth/.snappy/.bouncy all 0.5s; differ only by bounce 0 / 0.15 / 0.3"],
+  ["spring.smooth","Adw(1.0, 1, 158)","","hi",["gtk4-apps"],"SwiftUI .smooth — critically damped, no overshoot"],
+  ["spring.snappy","Adw(0.85, 1, 158)","","hi",["gtk4-apps"],"SwiftUI .snappy — slight overshoot"],
+  ["spring.default","Adw(0.825, 1, 131)","","hi",["gtk4-apps"],"SwiftUI .spring default (resp 0.55)"],
+  ["spring.interactive","Adw(0.86, 1, 1755)","","hi",["gtk4-apps"],"SwiftUI .interactiveSpring — gesture-velocity handoff"],
+  ["spring.mapping","k=(2π/resp)² · ratio=damp","","hi",["gtk4-apps"],"EXACT SwiftUI→AdwSpringParams conversion — same ODE"],
+  ["motion.feasibility","GTK4 app-code only","","hi",["gtk4-apps"],"NOT themeable; Shell + KWin do easing curves (Back/Elastic), not real springs"],
+  ["liquidGlass.motion","morph · velocity handoff","","med",["shader"],"gel-morph, thicker-on-scale — Apple publishes NO numeric constants"]
+ ],
+ Color:[
+  ["accent.default","#007AFF","","hi",["theme"],"control-TINT blue (light); distinct from the selection fill"],
+  ["selection.fill","#2962D9","","med",["theme","kvantum"],"MEASURED light sidebar selection — deeper than the tint"],
+  ["accent.palette","8 hues","","med",["theme"],"Blue #4380E8 · Purple #93359D · Pink #CF6195 · Red #C2413C · Orange #D97A39 · Yellow #DBB047 · Green #66A845 · Graphite #85A6C8"],
+  ["accent.recolors","buttons · pop-ups · checks · focus · selection","","hi",["theme","kvantum"],"Appearance settings scope — tint the BACKGROUND, never text/symbols"],
+  ["focusRing","#0a84ff · 3px","","hi",["theme"],"system-blue focus ring, deliberately DISTINCT from the accent #007AFF"],
+  ["textHighlight.decoupled","separate from accent","","hi",["theme"],"new in Tahoe"],
+  ["dark.selection","#0058D0 → #3C6BD2","","med",["theme"],"semantic base → rendered through dark glass"],
+  ["dark.material","#2B2E31","","med",["theme"],"dark sidebar / grouped-card (translucent, shifts with wallpaper)"],
+  ["dark.windowBg","#24282A","","med",["theme"],"dark window backdrop behind cards"],
+  ["appearance.auto","sun-based","","hi",["auto-appearance.py"],"matches macOS auto light/dark"]
+ ]
+};
+const root=document.getElementById('root');
+const cfLabel={hi:'high',med:'med',lo:'low'};
+let total=0;
+for(const [domain,rows] of Object.entries(T)){
+  total+=rows.length;
+  const s=document.createElement('section');
+  s.innerHTML=`<div class="sh"><h2>${domain}</h2><span class="cnt">${rows.length} tokens</span></div>`;
+  const card=document.createElement('div');card.className='card';
+  for(const [name,val,unit,cf,cons,note] of rows){
+    const el=document.createElement('div');el.className='tok';
+    el.innerHTML=
+      `<div class="name">${name}</div>`+
+      `<div class="val">${val}${unit?`<span class="u">${unit}</span>`:''}</div>`+
+      `<div class="meta">${cons.map(c=>`<span class="pill">${c}</span>`).join('')}</div>`+
+      `<div class="right"><span class="cf ${cf}">${cfLabel[cf]}</span></div>`+
+      `<div class="note">${note}</div>`;
+    card.appendChild(el);
+  }
+  s.appendChild(card);root.appendChild(s);
+}
+document.querySelector('.status').lastChild.textContent=` Apple corpus fully audited (5 readers) + measured @2x · ${total} tokens · 9 dimensions`;
+})();
+</script>

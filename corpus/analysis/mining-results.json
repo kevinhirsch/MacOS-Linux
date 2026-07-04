@@ -1,0 +1,232 @@
+{
+ "windows": [
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.6,
+   "inset_pt": 25.6,
+   "corner_pt": 20.0,
+   "name": "Activity-Monitor"
+  },
+  {
+   "ppt": 1.86,
+   "diam_pt": 14.0,
+   "spacing_pt": 22.6,
+   "inset_pt": 31.2,
+   "corner_pt": 21.5,
+   "name": "Calendar"
+  },
+  {
+   "ppt": 1.86,
+   "diam_pt": 14.0,
+   "spacing_pt": 24.5,
+   "inset_pt": 28.0,
+   "corner_pt": 21.0,
+   "name": "Contacts"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.6,
+   "inset_pt": 25.6,
+   "corner_pt": 20.0,
+   "name": "Disk-Utility"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.6,
+   "inset_pt": 25.6,
+   "corner_pt": 20.0,
+   "name": "Finder-Gallery"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.6,
+   "inset_pt": 25.6,
+   "corner_pt": 20.0,
+   "name": "Finder-Home"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.6,
+   "inset_pt": 25.6,
+   "corner_pt": 20.0,
+   "name": "Notes"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.6,
+   "inset_pt": 25.6,
+   "corner_pt": 20.0,
+   "name": "Preview"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.6,
+   "inset_pt": 25.6,
+   "corner_pt": 20.0,
+   "name": "Safari-v26"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.3,
+   "inset_pt": 26.1,
+   "corner_pt": 20.0,
+   "name": "Settings-Accessibility"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.3,
+   "inset_pt": 26.1,
+   "corner_pt": 20.0,
+   "name": "Settings-Appearance"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.3,
+   "inset_pt": 26.1,
+   "corner_pt": 20.0,
+   "name": "Settings-Battery"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.3,
+   "inset_pt": 26.1,
+   "corner_pt": 20.0,
+   "name": "Settings-Bluetooth"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.3,
+   "inset_pt": 26.1,
+   "corner_pt": 20.0,
+   "name": "Settings-Desktop-Dock"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.3,
+   "inset_pt": 26.1,
+   "corner_pt": 20.0,
+   "name": "Settings-Display"
+  },
+  {
+   "ppt": 2.19,
+   "diam_pt": 14.0,
+   "spacing_pt": 13.9,
+   "inset_pt": 22.8,
+   "corner_pt": 17.8,
+   "name": "Settings-Focus"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.3,
+   "inset_pt": 26.1,
+   "corner_pt": 20.0,
+   "name": "Settings-General"
+  },
+  {
+   "ppt": 2.07,
+   "diam_pt": 14.0,
+   "spacing_pt": 20.0,
+   "inset_pt": 29.0,
+   "corner_pt": 18.8,
+   "name": "Settings-Keyboard"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.0,
+   "inset_pt": 26.6,
+   "corner_pt": 20.0,
+   "name": "Settings-Lock-Screen"
+  },
+  {
+   "ppt": 2.07,
+   "diam_pt": 14.0,
+   "spacing_pt": 20.0,
+   "inset_pt": 29.0,
+   "corner_pt": 18.8,
+   "name": "Settings-Mouse"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.3,
+   "inset_pt": 26.1,
+   "corner_pt": 20.0,
+   "name": "Settings-Network"
+  },
+  {
+   "ppt": 2.19,
+   "diam_pt": 14.0,
+   "spacing_pt": 13.9,
+   "inset_pt": 22.8,
+   "corner_pt": 17.8,
+   "name": "Settings-Notifications"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.0,
+   "inset_pt": 26.6,
+   "corner_pt": 20.0,
+   "name": "Settings-Privacy"
+  },
+  {
+   "ppt": 2.19,
+   "diam_pt": 14.0,
+   "spacing_pt": 13.9,
+   "inset_pt": 22.8,
+   "corner_pt": 17.8,
+   "name": "Settings-Sound"
+  },
+  {
+   "ppt": 2.07,
+   "diam_pt": 14.0,
+   "spacing_pt": 20.0,
+   "inset_pt": 29.0,
+   "corner_pt": 18.8,
+   "name": "Settings-Trackpad"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.3,
+   "inset_pt": 26.1,
+   "corner_pt": 20.0,
+   "name": "Settings-Wi-Fi"
+  },
+  {
+   "ppt": 1.95,
+   "diam_pt": 14.0,
+   "spacing_pt": 23.0,
+   "inset_pt": 16.9,
+   "corner_pt": 10.2,
+   "name": "TextEdit"
+  }
+ ],
+ "accents": {
+  "Blue": "#3F79B0",
+  "Graphite": "#3F79B0",
+  "Green": "#3F79B0",
+  "Orange": "#3F79B0",
+  "Pink": "#3F79B0",
+  "Purple": "#3F79B0",
+  "Red": "#3F79B0",
+  "Yellow": "#3F79B0",
+  "Clear-Light": "#3F79B0",
+  "Tinted-Green-Light": "#3F79B0"
+ }
+}

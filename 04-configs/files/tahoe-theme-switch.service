@@ -1,0 +1,17 @@
+[Unit]
+Description=Tahoe Liquid Glass — apply sun-based light/dark theme
+Documentation=file:%h/Desktop/tahoe-liquid-glass-ubuntu/04-configs/README.md
+# Only meaningful inside a running Plasma graphical session.
+After=plasma-plasmashell.service graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+# Apply the correct theme for right now...
+ExecStart=%h/.local/bin/tahoe-theme-switch apply
+# ...then re-arm the timer for the NEXT sunrise/sunset boundary.
+ExecStartPost=%h/.local/bin/tahoe-theme-rearm
+# Plasma tools need the session bus + display; the user manager provides them.
+
+[Install]
+WantedBy=graphical-session.target

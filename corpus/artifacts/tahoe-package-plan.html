@@ -1,0 +1,114 @@
+<title>Tahoe Liquid Glass — Build Plan</title>
+<style>
+  :root{
+    --ground:#090c12; --card:#0f131b; --line:rgba(255,255,255,.08); --line-strong:rgba(255,255,255,.15);
+    --ink:#e8edf5; --muted:#8b95a7; --faint:#5c6675;
+    --accent:#5ac8fa; --hi:#5fd08a; --med:#f5c451; --lo:#ff8a6b; --violet:#a78bfa;
+    --ui: ui-sans-serif,-apple-system,"SF Pro Text","Helvetica Neue",Inter,system-ui,sans-serif;
+    --mono: ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+    radial-gradient(1200px 640px at 84% -10%,rgba(90,200,250,.10),transparent 60%),
+    radial-gradient(1000px 560px at 4% 106%,rgba(167,139,250,.09),transparent 55%),
+    var(--ground);color:var(--ink);font-family:var(--ui);-webkit-font-smoothing:antialiased;line-height:1.55}
+  .wrap{max-width:1040px;margin:0 auto;padding:46px 24px 90px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+  h1{margin:0;font-size:clamp(30px,4.6vw,46px);font-weight:660;letter-spacing:-.022em;text-wrap:balance}
+  .lede{margin:15px 0 0;color:var(--muted);font-size:15.5px;max-width:72ch}
+  .lede b{color:var(--ink);font-weight:600}
+  .verdict{margin:26px 0 0;padding:18px 20px;border:1px solid rgba(90,200,250,.3);border-radius:16px;
+    background:linear-gradient(180deg,rgba(90,200,250,.09),rgba(90,200,250,.03))}
+  .verdict h2{margin:0 0 6px;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent)}
+  .verdict p{margin:0;font-size:15px} .verdict b{color:#eaf6ff}
+  section{margin-top:36px}
+  .sh{display:flex;align-items:baseline;gap:12px;margin:0 0 6px}
+  .sh .num{font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .sh h2{margin:0;font-size:19px;font-weight:620;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 15px}
+  pre{background:#0b0f16;border:1px solid var(--line);border-radius:12px;padding:15px 17px;overflow-x:auto;
+    font-family:var(--mono);font-size:12px;line-height:1.6;color:#c9d4e2;margin:0}
+  pre .c{color:var(--faint)} pre .k{color:var(--accent)}
+  .layers{display:grid;grid-template-columns:1fr;gap:12px}
+  .layer{border:1px solid var(--line);border-radius:14px;padding:15px 17px;background:linear-gradient(180deg,var(--card),#0c1017);
+    display:grid;grid-template-columns:150px 1fr;gap:5px 18px;align-items:start}
+  .layer .ln{font-family:var(--mono);font-size:12.5px;font-weight:600;color:var(--accent)}
+  .layer .ld{color:var(--muted);font-size:13.5px} .layer .ld b{color:var(--ink);font-weight:600}
+  .layer .src{grid-column:2;margin-top:5px;font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+  .phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(232px,1fr));gap:13px}
+  .phase{border:1px solid var(--line);border-radius:15px;padding:16px;background:linear-gradient(180deg,var(--card),#0c1017)}
+  .phase .p{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--violet)}
+  .phase h3{margin:6px 0 8px;font-size:15.5px;font-weight:620}
+  .phase ul{margin:0;padding-left:16px;color:var(--muted);font-size:12.5px} .phase li{margin:4px 0}
+  .surf{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+  .surf div{border:1px solid var(--line);border-radius:12px;padding:14px 15px;background:rgba(255,255,255,.02)}
+  .surf h4{margin:0 0 5px;font-size:14px} .surf p{margin:0;color:var(--muted);font-size:12.5px}
+  .surf .mono{font-family:var(--mono);color:var(--accent);font-size:11.5px}
+  .ceil{border:1px dashed var(--line-strong);border-radius:14px;padding:16px 18px;background:rgba(255,138,107,.03);margin-top:6px}
+  .ceil b{color:var(--lo)} .ceil p{margin:6px 0 0;color:var(--muted);font-size:13px}
+  .foot{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);color:var(--faint);font-size:12.5px;max-width:76ch}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Material Lab · package</p>
+  <h1>Tahoe Liquid Glass for Ubuntu</h1>
+  <p class="lede">The endgame — a distributable package that reproduces macOS Tahoe + Liquid Glass on Ubuntu, built against the locked baseline (<b>calibration sheet</b> for the numbers, <b>rulebook</b> for the laws). Aesthetic parity; apps you install inherit it. Not a pile of tweaks — a repo with an installer.</p>
+
+  <div class="verdict">
+    <h2>Substrate — settled by evidence</h2>
+    <p><b>KDE Plasma 6 + a custom KWin OpenGL effect.</b> Pixel-parity Liquid Glass is compositor-level, and the deciding fact came from a real project: a GNOME extension has to <b>clone the wallpaper</b> because Mutter won't hand over the backdrop, and it won't even load on your GNOME 46. KWin gives an effect the real backdrop framebuffer directly — cleaner, and it reaches behind actual windows. The GLSL optics are proven and MIT-licensed (port, don't reinvent). Plasma also means <b>Qt apps inherit Kvantum natively and GTK apps via the bridge</b> — your "apps extend the theme" requirement, for free.</p>
+  </div>
+
+  <section>
+    <div class="sh"><span class="num">01</span><h2>The package</h2></div>
+    <p class="sub">One repo, one <span style="font-family:var(--mono);font-size:12px">install.sh</span>, four layers driven by the token file.</p>
+    <pre><span class="c"># tahoe-liquid-glass-ubuntu/</span>
+install.sh              <span class="c"># orchestrates the four layers below, idempotent + reversible</span>
+tokens/tahoe.json       <span class="c"># the calibration sheet as machine config — single source of truth</span>
+<span class="k">01-substrate/</span>          <span class="c"># apt: kde-plasma-desktop · qt5/6-style-kvantum · kwin dev headers</span>
+<span class="k">02-glass-effect/</span>       <span class="c"># KWin OpenGL effect — ported glass.frag, tuned to tokens</span>
+<span class="k">03-theme/</span>              <span class="c"># Kvantum + Aurorae (traffic lights) + color-schemes (L/D/contrast)</span>
+<span class="k">04-configs/</span>            <span class="c"># global menu · dock · SF Pro · wallpaper · springs · a11y</span>
+parity/                 <span class="c"># Apple reference shots + per-surface tuning notes (the compare loop)</span></pre>
+  </section>
+
+  <section>
+    <div class="sh"><span class="num">02</span><h2>The four layers</h2></div>
+    <p class="sub">Each reads from the tokens and obeys the rulebook.</p>
+    <div class="layers">
+      <div class="layer"><div class="ln">SUBSTRATE</div><div class="ld"><b>Plasma 6 alongside GNOME</b> (session-switchable at login, <span style="color:var(--hi)">reversible</span>) — or a clean Kubuntu if you commit. Pulls Kvantum + the Better-Blur KWin effect as the glass base.</div><div class="src">apt: kde-plasma-desktop · qt6-style-kvantum · kwin-effects-forceblur</div></div>
+      <div class="layer"><div class="ln">GLASS EFFECT</div><div class="ld"><b>Custom KWin OpenGL effect.</b> Port the proven optics — Snell refraction, superellipse height <span class="mono">y=(1−(1−x)⁴)^¼</span>, Fresnel + specular + chromatic, <b>adaptive-ink flip @ Y≈0.36</b>. Apply per the rulebook: one plane, functional surfaces only, never glass-on-glass, Regular default / Clear + 35% dim, <b>materialize not fade</b>.</div><div class="src">tokens: glass.* · vibrancy.blend · material.variants · shape.types</div></div>
+      <div class="layer"><div class="ln">THEME</div><div class="ld"><b>Kvantum</b> tuned to tokens (radii, control 28/24/28pt, <b>tint the background not the text</b>) + <b>Aurorae</b> decoration (left traffic lights 14/24/26pt) + color-schemes for light / dark / increased-contrast. Concentric radii: window 16/20/26 → card 9 → control.</div><div class="src">tokens: window.radius.* · card.cornerRadius · accent.palette · selection.fill · focusRing</div></div>
+      <div class="layer"><div class="ln">CONFIGS</div><div class="ld"><b>Global menu</b> (App·File·Edit·… order) · <b>dock</b> (floating panel, icons-only, 48/128px) · <b>SF Pro</b> + the type ramp · the real <b>Tahoe-Beach wallpaper</b> + sun-based auto light/dark (port the Phoenix timer) · <b>springs</b> per-app for GTK4 via AdwSpringParams · <b>a11y</b> overrides.</div><div class="src">tokens: type.* · dock.* · appearance.auto · spring.* · menuBar order</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sh"><span class="num">03</span><h2>First three parity surfaces</h2></div>
+    <p class="sub">You named them. The corpus prescribes 3–10 <em>parity passes</em> each: render → set beside the Apple shot → tune → repeat. Pixel-perfect is converged to, not measured.</p>
+    <div class="surf">
+      <div><h4>Dock</h4><p class="mono">icon 48 · mag 128 · float + glass</p><p>Plasma floating panel, icons-only task manager, Kvantum glass + the KWin effect; dial bar height/radius/spacing by comparison.</p></div>
+      <div><h4>Toolbar</h4><p class="mono">~50–52pt · 3-zone</p><p>Aurorae + toolbar glass; leading/center/trailing zones, traffic lights left, no custom background fighting the scroll-edge.</p></div>
+      <div><h4>Settings window</h4><p class="mono">card 9 · row 44 · sel 33 · sidebar 225–275</p><p>Kvantum list/sidebar styling to the measured metrics; sidebar floats with background-extension under it.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sh"><span class="num">04</span><h2>Build order</h2></div>
+    <div class="phases">
+      <div class="phase"><div class="p">Phase 0</div><h3>Substrate + static parity</h3><ul><li>Plasma + Kvantum + MacTahoe-kde base</li><li>SF Pro, type ramp, wallpaper, auto L/D</li><li>Aurorae traffic lights, accent palette</li><li>tokens applied → ~80% look, no live glass yet</li></ul></div>
+      <div class="phase"><div class="p">Phase 1</div><h3>Glass effect v1</h3><ul><li>KWin effect: frost + tint + Regular/Clear</li><li>Adaptive-ink flip on panels/dock/menus</li><li>Better-Blur base, per-surface allowlist</li><li>materialize-not-fade transitions</li></ul></div>
+      <div class="phase"><div class="p">Phase 2</div><h3>Real lensing + parity</h3><ul><li>Port glass.frag: refraction + specular + squircle</li><li>Tune to tokens (IOR, n, morph 40pt)</li><li>Parity-pass dock → toolbar → settings</li></ul></div>
+      <div class="phase"><div class="p">Phase 3</div><h3>Package + ship</h3><ul><li>Wrap in install.sh, idempotent + reversible</li><li>Reproducibility test on a clean VM</li><li>README + the calibration sheet/rulebook</li></ul></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sh"><span class="num">05</span><h2>The honest ceiling</h2></div>
+    <div class="ceil">
+      <p><b>~95% of the desktop is reachable.</b> The residual is narrow and named: <b>dynamic ink on third-party app-drawn text</b> (the app owns those glyphs — even macOS only auto-applies it to system chrome), <b>true spring physics inside non-native apps</b> (GTK4 apps you build get it; arbitrary apps don't), and <b>pixel-exact refraction</b> (convincing, not bit-identical — no Linux compositor mirrors Apple's exact Metal pipeline). Everything Apple renders in its own compositor, we render in KWin.</p>
+    </div>
+  </section>
+
+  <p class="foot"><b>Two ways in.</b> The clean route is a fresh <b>Kubuntu</b> (or Plasma-first) install — no coexistence mess. The no-repave route is <b>Plasma added beside your GNOME</b>, chosen at the login screen and <span style="color:var(--hi)">removable with apt</span> — you trial it without giving up GNOME. Either way, Phase 0 is low-risk and reversible, and it's where we'd start. Every value here traces to the calibration sheet; every behaviour to the rulebook.</p>
+</div>

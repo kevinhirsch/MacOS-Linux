@@ -1,0 +1,18 @@
+[Unit]
+Description=Tahoe Liquid Glass — fire at the next sunrise/sunset
+Documentation=file:%h/Desktop/tahoe-liquid-glass-ubuntu/04-configs/README.md
+
+[Timer]
+# The OnCalendar value is REWRITTEN on each run by tahoe-theme-rearm to the next
+# exact sun transition. This bootstrap value (twice a day, roughly dawn/dusk for
+# Phoenix) guarantees the switch fires even before the first re-arm, and acts as
+# a safety net if a re-arm is ever skipped.
+OnCalendar=*-*-* 06:00:00
+OnCalendar=*-*-* 19:00:00
+# Also catch up if the machine was asleep/off across a boundary.
+Persistent=true
+AccuracySec=1min
+Unit=tahoe-theme-switch.service
+
+[Install]
+WantedBy=timers.target

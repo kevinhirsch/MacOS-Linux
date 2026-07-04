@@ -1,0 +1,11 @@
+<!DOCTYPE RCC><RCC version="1.0">
+<qresource prefix="/effects/tahoe_liquid_glass/">
+  <file>shaders/vertex.vert</file>
+  <file>shaders/vertex_core.vert</file>
+  <file>shaders/roundedcorners.glsl</file>
+  <file>shaders/downsample.frag</file>
+  <file>shaders/downsample_core.frag</file>
+  <file>shaders/liquid_glass.frag</file>
+  <file>shaders/liquid_glass_core.frag</file>
+</qresource>
+</RCC>

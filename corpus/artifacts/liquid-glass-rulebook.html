@@ -1,0 +1,131 @@
+<title>Liquid Glass Rulebook</title>
+<style>
+  :root{
+    --ground:#090c12; --card:#0f131b; --line:rgba(255,255,255,.08); --line-strong:rgba(255,255,255,.15);
+    --ink:#e8edf5; --muted:#8b95a7; --faint:#5c6675;
+    --accent:#5ac8fa; --star:#f5c451; --crit:#ff8a6b;
+    --ui: ui-sans-serif,-apple-system,"SF Pro Text","Helvetica Neue",Inter,system-ui,sans-serif;
+    --mono: ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+    radial-gradient(1100px 620px at 84% -8%,rgba(90,200,250,.10),transparent 60%),
+    radial-gradient(900px 560px at 4% 108%,rgba(245,196,81,.07),transparent 55%),
+    var(--ground);color:var(--ink);font-family:var(--ui);-webkit-font-smoothing:antialiased;line-height:1.5}
+  .wrap{max-width:1000px;margin:0 auto;padding:46px 24px 90px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+  h1{margin:0;font-size:clamp(28px,4.4vw,44px);font-weight:650;letter-spacing:-.02em;text-wrap:balance}
+  .lede{margin:14px 0 0;color:var(--muted);font-size:15px;max-width:70ch}
+  .lede b{color:var(--ink);font-weight:600}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;margin:20px 0 4px;font-size:12.5px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:7px}
+  .star{color:var(--star)} .crit{color:var(--crit);font-family:var(--mono);font-size:10px;letter-spacing:.06em;
+    text-transform:uppercase;border:1px solid rgba(255,138,107,.4);background:rgba(255,138,107,.12);border-radius:5px;padding:2px 7px}
+
+  section{margin-top:28px}
+  .sh{display:flex;align-items:baseline;gap:10px;margin:0 0 10px}
+  .sh .n{font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .sh h2{margin:0;font-size:16px;font-weight:640;letter-spacing:.01em}
+  .card{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:linear-gradient(180deg,var(--card),#0c1017)}
+  .rule{display:grid;grid-template-columns:auto 1fr auto;gap:0 12px;padding:12px 16px;border-top:1px solid var(--line);align-items:baseline}
+  .rule:first-child{border-top:none}
+  .rule .m{font-family:var(--mono);font-size:11px;color:var(--faint);white-space:nowrap}
+  .rule .t{font-size:13.5px;color:var(--ink)} .rule .t b{color:#fff;font-weight:600}
+  .rule .t em{color:var(--muted);font-style:normal}
+  .rule .tag{justify-self:end;align-self:center}
+  .foot{margin-top:38px;padding-top:18px;border-top:1px solid var(--line);color:var(--faint);font-size:12.5px;max-width:76ch}
+  .foot b{color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Material Lab · rulebook</p>
+  <h1>Liquid Glass Rulebook</h1>
+  <p class="lede">The design-law half of the baseline — distilled from a full audit of the Apple Liquid Glass corpus (HIG, WWDC 219/310/356, materials + component docs). The calibration sheet holds the <b>numbers</b>; this holds the <b>rules</b>. Together they specify the theme's behaviour, not just its look. Rules are paraphrased in our own words.</p>
+  <div class="legend">
+    <span><span class="crit">load-bearing</span> shapes how the package is built — get these wrong and it stops reading as Tahoe</span>
+  </div>
+
+  <div id="root"></div>
+
+  <p class="foot"><b>The one meta-rule (APPLE_GENIUS):</b> authentic Apple always wins — mirror it pixel-for-pixel, and where there's no Apple element to mirror, don't invent one. Restraint is the whole aesthetic: over-applied glass, extra tint, and busy motion are the most common failures. Glass is a finish, never a crutch — strip it away and every surface must still be fully legible and operable.</p>
+</div>
+
+<script>
+(function(){
+// [marker, rule(html), loadBearing?]
+const R={
+ "Layering":[
+  ["L1","<b>One glass plane only.</b> A single floating <em>functional</em> layer (controls + navigation) sits above the content layer. Glass is structure, not decoration.",1],
+  ["L2","<b>Never glass-on-glass.</b> Two glass surfaces must never overlap — glass can't sample glass, so the render goes inconsistent.",1],
+  ["L3","<b>Never glass in the content layer.</b> Content uses standard materials; only a control knob may turn to glass <em>while actively dragged</em>.",1],
+  ["L4","Group adjacent glass in one container so shapes blend/morph and share one sampling pass; cap total glass on screen (~20).",0],
+  ["L5","Avoid content↔glass intersections at rest (e.g. at launch) — reposition or scale to keep separation.",0]
+ ],
+ "Variants":[
+  ["V1","<b>Two variants, never mixed: Regular and Clear.</b> Regular is the default for almost everything — adaptive, legible over any content.",1],
+  ["V2","<b>Clear only over media-rich content</b>, and only when all three hold: over bright media, content tolerates dimming, and the content above is bold + bright.",1],
+  ["V3","Clear over bright media needs a <b>35% dark dimming layer</b> (localized for small footprints; none needed over dark content or AVKit).",1]
+ ],
+ "Shape & concentricity":[
+  ["S1","<b>Three shape types:</b> fixed (constant r) · capsule (r = ½ height) · concentric (r = parent − padding). This is the geometry Apple actually publishes.",1],
+  ["S2","<b>Nest concentrically</b> — inner radius derives from its container; corners far from an edge default to 0.",1],
+  ["S3","Window radius is style-dependent: toolbar windows use a larger radius, titlebar-only windows a smaller one; the hardware bezel informs UI curvature.",0],
+  ["S4","Concentric-with-fallback: a control uses its concentric radius when nested, a fixed fallback when standalone.",0]
+ ],
+ "Controls":[
+  ["C1","<b>Five sizes</b> — mini · small · medium · large · extra-large (XL is new). Shape by size: ≤ medium = rounded rect; ≥ large = capsule.",1],
+  ["C2","<b>Controls sit on a material, not directly on content</b> — the material provides the separation that keeps them legible.",1],
+  ["C3","Signal the preferred action by <b>style, never size</b> — mismatched sizes read as broken; cap prominent buttons at 1–2 per view.",0],
+  ["C4","Never hard-code control heights; let the framework size them. Reduce custom backgrounds/tints — they fight the system glass + scroll-edge.",0],
+  ["C5","Every control has a visible pressed state; hit target ≥ 44×44pt even when the visual is smaller.",0]
+ ],
+ "Color & tint":[
+  ["K1","<b>Tint the BACKGROUND, never text or symbols.</b> A solid fill breaks the character of glass; colour the translucent surface instead.",1],
+  ["K2","Glass is colourless by default — it pulls hue/brightness/saturation from the content behind it (tones mapped to backdrop brightness).",1],
+  ["K3","<b>One emphasis per context.</b> Tint sparingly (status, one primary CTA); when everything is tinted, nothing stands out. Colour lives in the content layer.",1],
+  ["K4","Destructive = system red at secondary prominence. Tint prominence has 4 levels (auto/none/secondary/primary).",0],
+  ["K5","Ship light + dark + increased-contrast variants of every custom colour; the focus ring is a distinct system blue, separate from the accent.",0]
+ ],
+ "Adaptive legibility":[
+  ["A1","<b>Small elements flip; large elements mute.</b> Toolbars/tab-bars + their symbols flip light↔dark as a unit at backdrop luminance ≈ 0.36; menus/sidebars adapt but never flip (too big — distracting).",1],
+  ["A2","Vibrancy = a luminosity blend (keep foreground lightness, pull hue/sat from backdrop), graded: labels 4 levels / fills 3 / separators 1. Quaternary never on thin materials.",1],
+  ["A3","Regular never darkens the glass to keep a light symbol — it flips the symbol and raises shadow opacity instead.",0],
+  ["A4","Shadow is content-aware: opacity rises over text, falls over a solid light background.",0]
+ ],
+ "Optics & motion":[
+  ["O1","<b>Lensing is the defining optic</b> — glass bends and concentrates light in real time; the silhouette is read from the warp, not a border.",1],
+  ["O2","<b>Materialize, don't fade</b> — objects appear/disappear by modulating lensing, not opacity.",1],
+  ["O3","Specular highlights respond to geometry and travel on interaction; larger glass = thicker material (deeper shadow, stronger lensing).",0],
+  ["O4","Losing focus recedes — an unfocused window's glass shifts back to guide attention. Shapes morph when their edges are within the container spacing (~40pt).",0],
+  ["O5","Motion is purposeful, interruptible, and follows the gesture; subtler for pointer than for direct touch.",0]
+ ],
+ "Structure (chrome)":[
+  ["G1","<b>Menu-bar order is fixed:</b> App · File · Edit · Format · View · [app-specific] · Window · Help. Always show the same items; disable, don't hide.",1],
+  ["G2","<b>Toolbar three zones:</b> leading (non-customizable) · center (customizable, auto-overflows) · trailing (always-visible + More + one prominent primary). Aim for ≤ 3 groups; never mix text + symbols in one shared background.",1],
+  ["G3","Sidebars float in glass, show ≤ 2 hierarchy levels, and content <b>extends beneath</b> them via a background-extension (mirror + blur); more opaque at large size.",0],
+  ["G4","Tab bars are navigation only, float, let content peek, and can minimize on scroll. Sheets inset to peek, grow more opaque at full height, and dim the parent.",0],
+  ["G5","Scroll-edge effect is the content↔controls transition (soft = fade, hard = pinned) — not a bar background. Popover arrows point at their trigger.",0]
+ ],
+ "Accessibility (overrides the optics)":[
+  ["X1","<b>Glass is never load-bearing for legibility</b> — strip the effect and the surface must stay fully legible and operable.",1],
+  ["X2","Reduce Transparency → frost toward opaque. Increase Contrast → predominantly black/white + a contrasting border (the adaptive flip is abandoned).",1],
+  ["X3","Reduce Motion → tighten springs to kill bounce, track the gesture, drop z-depth animation, turn transitions into fades, don't animate in/out of blur.",0],
+  ["X4","Support 200% text scaling; never signal by colour alone; test every custom element under the a11y trio, in light and dark.",0]
+ ]
+};
+const root=document.getElementById('root');
+let i=0;
+for(const [domain,rules] of Object.entries(R)){
+  i++;
+  const s=document.createElement('section');
+  s.innerHTML=`<div class="sh"><span class="n">${String(i).padStart(2,'0')}</span><h2>${domain}</h2></div>`;
+  const card=document.createElement('div');card.className='card';
+  for(const [m,t,crit] of rules){
+    const el=document.createElement('div');el.className='rule';
+    el.innerHTML=`<div class="m">${m}</div><div class="t">${t}</div><div class="tag">${crit?'<span class="crit">load-bearing</span>':''}</div>`;
+    card.appendChild(el);
+  }
+  s.appendChild(card);root.appendChild(s);
+}
+})();
+</script>

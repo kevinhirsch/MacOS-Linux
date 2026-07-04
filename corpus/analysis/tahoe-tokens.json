@@ -1,0 +1,73 @@
+{
+  "$meta": {
+    "name": "macOS Tahoe calibration tokens",
+    "purpose": "Single source of truth for pixel-parity work: theme scripts + Liquid Glass shader read from here.",
+    "principle": "When a value is ambiguous, Apple HIG + Tahoe screenshots are ground truth. These are our own DERIVED measurements/specs, not reproductions of Apple assets.",
+    "confidence": "high = Apple-documented or trivially measured; med = consistent across teardowns; low = reasoned estimate, measure directly before shipping",
+    "status": "reconciled against corpus audit. Items still marked low need a direct screenshot measurement.",
+    "sources": "Apple HIG (Materials, Motion), Apple newsroom (Liquid Glass 2025), SwiftUI docs (ConcentricRectangle, Material), WWDC25 AppKit design, lapcatsoftware teardowns, MacRumors threads, macos-defaults.com, SF Pro optical-size docs",
+    "units": "pt = logical points (≈2px on Retina); px = physical pixels; u = shader uniform (0..~2)"
+  },
+  "geometry": {
+    "corner.style":              { "value": "continuous (squircle)", "confidence": "high", "consumers": ["shader","kwin","gtk"], "revised": true, "note": "Apple .continuous / ConcentricRectangle" },
+    "window.cornerRadius.titlebar": { "value": 16, "unit": "pt", "confidence": "high", "consumers": ["gtk","kwin","shader"], "revised": true, "note": "Apple reference 'Window corners': Titlebar window = 16pt" },
+    "window.cornerRadius.compactToolbar": { "value": 20, "unit": "pt", "confidence": "high", "consumers": ["gtk","kwin"], "revised": true, "note": "Apple reference 'Window corners': Compact toolbar window = 20pt" },
+    "window.cornerRadius.toolbar":  { "value": 26, "unit": "pt", "confidence": "high", "consumers": ["gtk","kwin"], "revised": true, "note": "Apple reference 'Window corners': Toolbar window = 26pt (my @2x measurement of ~24 validated within 2pt). Discrete tiers, not continuous" },
+    "squircle.exponent":         { "value": 4.0, "unit": "n",  "confidence": "med", "consumers": ["shader","kwin"], "revised": true, "note": "best superellipse fit n≈4 (≈Figma smoothing 0.6); Apple's real corner is tuned Bezier, not a pure superellipse" },
+    "concentricity.rule":        { "value": "inner = outer - inset", "confidence": "high", "consumers": ["gtk","shader"], "revised": true, "note": "shared curve center; corners far from an edge default to radius 0" },
+    "trafficLight.diameter":     { "value": 14, "unit": "pt", "confidence": "high", "consumers": ["gtk-theme"], "revised": true, "note": "14pt standard; CONFIRMED by measurement (28px @2x = 14pt)" },
+    "trafficLight.spacing":      { "value": 24, "unit": "pt", "confidence": "high", "consumers": ["gtk-theme"], "revised": true, "note": "MEASURED center-to-center on a Finder capture @2x (46-47px/1.98)" },
+    "trafficLight.inset":        { "value": 26, "unit": "pt", "confidence": "high", "consumers": ["gtk-theme"], "revised": true, "note": "MEASURED consensus across 27 windows: control-center inset from window edge @2x (median 26.1pt)" }
+  },
+  "material": {
+    "material.tiers":            { "value": "ultraThin·thin·regular·thick·ultraThick", "confidence": "high", "consumers": ["shader","theme"], "revised": true, "note": "HIG Materials / SwiftUI Material enum" },
+    "vibrancy.levels":           { "value": "primary>secondary>tertiary>quaternary", "confidence": "high", "consumers": ["shader","toolkit"], "revised": true, "note": "foreground contrast tiers; quaternary not for thin materials" },
+    "material.states":           { "value": "Clear | Tinted", "confidence": "high", "consumers": ["shader","theme"], "revised": true, "note": "Apple-documented Liquid Glass appearances: Clear = more transparent; Tinted = more opacity + contrast (user-selectable)" },
+    "adaptiveInk.behavior":      { "value": "foreground shifts light/dark + contrast", "confidence": "high", "consumers": ["toolkit","shader"], "revised": true, "note": "the 'dynamic ink' — text/symbols adapt to backdrop to stay legible; compositor-only CANNOT do it, needs toolkit cooperation on Linux" },
+    "liquidGlass.mechanism":     { "value": "lensing + specular + adaptive shadow", "confidence": "high", "consumers": ["shader"], "revised": true, "note": "refraction, NOT scatter-blur — validates the shader's refraction pass" },
+    "glass.refraction":          { "value": 0.75, "unit": "u", "confidence": "low", "consumers": ["shader"], "note": "lensing magnitude; motion-dependent, tune in the Lab" },
+    "glass.specular":            { "value": 0.5,  "unit": "u", "confidence": "low", "consumers": ["shader"], "note": "subtle rim highlight" },
+    "glass.chromatic":           { "value": 0.15, "unit": "u", "confidence": "low", "consumers": ["shader"], "note": "edge realism; not a named Apple feature — keep barely-there" },
+    "blur.sigma":                { "value": 24,   "unit": "px","confidence": "low", "consumers": ["blur-my-shell","kwin","shader"], "note": "our frost approximation; the real mechanism is lensing" },
+    "menuBar.translucency":      { "value": "transparent by default", "confidence": "high", "consumers": ["just-perfection"], "revised": true, "note": "Tahoe; optional 'Show Menu Bar Background'" }
+  },
+  "layout": {
+    "menuBar.height":            { "value": 31, "unit": "px", "confidence": "high", "consumers": ["just-perfection"], "revised": true, "note": "corroborated: Sequoia 25px to Tahoe 31px" },
+    "dock.iconSize":            { "value": 48, "unit": "px", "confidence": "high", "consumers": ["dash-to-dock"], "revised": true, "note": "com.apple.dock tilesize default; range 16-128" },
+    "dock.magnifiedSize":        { "value": 128,"unit": "px", "confidence": "high", "consumers": ["dash-to-dock"], "revised": true, "note": "GUI slider max; Terminal largesize to 512. No true parabolic zoom on Linux" },
+    "spacing.grid":              { "value": 8,  "unit": "pt", "confidence": "med", "consumers": ["all"], "note": "Apple convention (4pt half-steps), not a Tahoe-published spec" },
+    "control.buttonHeight":      { "value": "21-22", "unit": "pt", "confidence": "med", "consumers": ["gtk","kvantum"], "revised": true, "note": "classic regular push-button; Settings uses list rows, so no bare button was in the measured shots" },
+    "control.toolbarHeight":     { "value": "38-52", "unit": "pt", "confidence": "low", "consumers": ["gtk"], "revised": true, "note": "Tahoe glass toolbars are taller; unpublished" },
+    "card.cornerRadius":         { "value": 9,  "unit": "pt", "confidence": "med", "consumers": ["gtk","kvantum"], "revised": true, "note": "MEASURED: grouped list card @2x; inner-container radius, distinct from window radius" },
+    "list.rowHeight":            { "value": 44, "unit": "pt", "confidence": "med", "consumers": ["gtk"], "revised": true, "note": "MEASURED: Settings list-row pitch @2x (~86px/1.9); some variance from group gaps" },
+    "sidebar.selectionHeight":   { "value": 33, "unit": "pt", "confidence": "med", "consumers": ["gtk"], "revised": true, "note": "MEASURED: sidebar selected-row pill height @2x" }
+  },
+  "type": {
+    "family.ui":                 { "value": "SF Pro Text", "confidence": "high", "consumers": ["gtk","qt","electron"], "note": "installed + wired" },
+    "family.display":            { "value": "SF Pro Display", "confidence": "high", "consumers": ["headings"], "note": "optical switch above crossover" },
+    "opticalCrossover":          { "value": 20, "unit": "pt", "confidence": "high", "consumers": ["type-ramp"], "revised": true, "note": "Text <=19pt, Display >=20pt (SF opsz axis)" },
+    "size.body":                 { "value": 13, "unit": "pt", "confidence": "high", "consumers": ["gtk"], "revised": true, "note": "NSFont.systemFontSize; believed unchanged in Tahoe" },
+    "size.smallLabel":           { "value": 11, "unit": "pt", "confidence": "med", "consumers": ["gtk"], "revised": true, "note": "AppKit smallSystemFontSize" },
+    "weight.appName":            { "value": "semibold", "confidence": "med", "consumers": ["appmenu-is-back"], "note": "app name in menu bar; Apple publishes no per-element weight table" }
+  },
+  "motion": {
+    "baseline.duration":     { "value": "0.25", "unit": "s", "confidence": "high", "consumers": ["gtk"], "revised": true, "note": "AppKit NSAnimationContext default — the one hard duration constant Apple documents" },
+    "spring.presetDuration": { "value": "0.5", "unit": "s", "confidence": "high", "consumers": ["gtk4-apps"], "revised": true, "note": "SwiftUI .smooth/.snappy/.bouncy all 0.5s; differ only by bounce 0 / 0.15 / 0.3 (= 1 - dampingFraction)" },
+    "spring.smooth":         { "value": "AdwSpringParams(1.0, 1, 158)", "confidence": "high", "consumers": ["gtk4-apps"], "revised": true, "note": "SwiftUI .smooth (response 0.5, damping 1.0) — critically damped, no overshoot" },
+    "spring.snappy":         { "value": "AdwSpringParams(0.85, 1, 158)", "confidence": "high", "consumers": ["gtk4-apps"], "revised": true, "note": "SwiftUI .snappy (response 0.5, damping 0.85) — slight overshoot" },
+    "spring.bouncy":         { "value": "AdwSpringParams(0.7, 1, 158)", "confidence": "high", "consumers": ["gtk4-apps"], "revised": true, "note": "SwiftUI .bouncy (response 0.5, damping 0.7)" },
+    "spring.default":        { "value": "AdwSpringParams(0.825, 1, 131)", "confidence": "high", "consumers": ["gtk4-apps"], "revised": true, "note": "SwiftUI .spring default (response 0.55, damping 0.825)" },
+    "spring.interactive":    { "value": "AdwSpringParams(0.86, 1, 1755)", "confidence": "high", "consumers": ["gtk4-apps"], "revised": true, "note": "SwiftUI .interactiveSpring (response 0.15, damping 0.86) — gesture-velocity handoff via initial-velocity" },
+    "spring.mapping":        { "value": "stiffness=(2pi/response)^2*mass; damping_ratio=dampingFraction", "confidence": "high", "consumers": ["gtk4-apps"], "revised": true, "note": "EXACT SwiftUI->libadwaita conversion — same damped-oscillator ODE, not an approximation" },
+    "motion.feasibility":    { "value": "authentic springs = GTK4 app-code only", "confidence": "high", "consumers": ["gtk4-apps"], "revised": true, "note": "NOT themeable (no CSS spring property); GNOME Shell + KWin do easing curves (Back/Elastic fake overshoot), not real physics" },
+    "liquidGlass.motion":    { "value": "morph/gel, thicker-on-scale, velocity handoff", "confidence": "med", "consumers": ["shader"], "revised": true, "note": "behavior only — Apple publishes NO numeric motion constants for Liquid Glass" }
+  },
+  "color": {
+    "accent.default":            { "value": "#007AFF", "confidence": "high", "consumers": ["theme"], "revised": true, "note": "control-TINT blue (accepted sRGB); Tahoe swatch unpublished. Distinct from the deeper sidebar SELECTION fill below" },
+    "selection.fill":            { "value": "#2962D9", "confidence": "med", "consumers": ["theme","kvantum"], "revised": true, "note": "MEASURED: sidebar selected-row fill @2x; deeper than the control tint — macOS uses different tint vs selection blues" },
+    "accent.palette":            { "value": "Blue #4380E8, Purple #93359D, Pink #CF6195, Red #C2413C, Orange #D97A39, Yellow #DBB047, Green #66A845, Graphite #85A6C8", "confidence": "med", "consumers": ["theme"], "revised": true, "note": "MEASURED by differencing the 8 accent samples (median of accent-colored pixels)" },
+    "accent.recolors":           { "value": "buttons, pop-ups, radios/checks, focus rings, selection", "confidence": "high", "consumers": ["theme","kvantum"], "revised": true, "note": "MacRumors teardown + Appearance settings" },
+    "textHighlight.decoupled":   { "value": "separate from accent", "confidence": "high", "consumers": ["theme"], "revised": true, "note": "new in Tahoe" },
+    "appearance.auto":           { "value": "sun-based", "confidence": "high", "consumers": ["auto-appearance.py"], "note": "matches macOS auto light/dark" }
+  }
+}

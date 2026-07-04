@@ -1,0 +1,157 @@
+<title>Pixel-Parity Strategy</title>
+<style>
+  :root{
+    --ground:#090c12; --card:#0f131b; --line:rgba(255,255,255,.08); --line-strong:rgba(255,255,255,.15);
+    --ink:#e8edf5; --muted:#8b95a7; --faint:#5c6675;
+    --accent:#5ac8fa; --hi:#5fd08a; --med:#f5c451; --lo:#ff8a6b; --violet:#a78bfa;
+    --ui: ui-sans-serif,-apple-system,"SF Pro Text","Helvetica Neue",Inter,system-ui,sans-serif;
+    --mono: ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:
+    radial-gradient(1200px 640px at 84% -10%,rgba(90,200,250,.10),transparent 60%),
+    radial-gradient(1000px 560px at 4% 106%,rgba(167,139,250,.09),transparent 55%),
+    var(--ground);color:var(--ink);font-family:var(--ui);-webkit-font-smoothing:antialiased;line-height:1.55}
+  .wrap{max-width:1040px;margin:0 auto;padding:46px 24px 90px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+  h1{margin:0;font-size:clamp(30px,4.6vw,48px);font-weight:660;letter-spacing:-.022em;text-wrap:balance}
+  .lede{margin:15px 0 0;color:var(--muted);font-size:15.5px;max-width:70ch}
+  .lede b{color:var(--ink);font-weight:600}
+
+  .verdict{margin:26px 0 0;padding:20px 22px;border:1px solid rgba(95,208,138,.3);border-radius:16px;
+    background:linear-gradient(180deg,rgba(95,208,138,.09),rgba(95,208,138,.03))}
+  .verdict h2{margin:0 0 6px;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--hi)}
+  .verdict p{margin:0;font-size:15.5px} .verdict b{color:#eafff2}
+
+  section{margin-top:38px}
+  .sh{display:flex;align-items:baseline;gap:12px;margin:0 0 4px}
+  .sh .num{font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .sh h2{margin:0;font-size:19px;font-weight:620;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 16px}
+
+  .layers{display:grid;grid-template-columns:1fr;gap:12px}
+  .layer{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:linear-gradient(180deg,var(--card),#0c1017);
+    display:grid;grid-template-columns:130px 1fr auto;gap:4px 18px;align-items:start}
+  .layer .lname{font-family:var(--mono);font-size:12.5px;font-weight:600}
+  .layer.t .lname{color:var(--hi)} .layer.c .lname{color:var(--accent)} .layer.k .lname{color:var(--lo)}
+  .layer .desc{color:var(--muted);font-size:13.5px} .layer .desc b{color:var(--ink);font-weight:600}
+  .layer .tag{font-family:var(--mono);font-size:10px;letter-spacing:.05em;padding:3px 9px;border-radius:999px;white-space:nowrap;align-self:center}
+  .layer.t .tag{color:#052;background:rgba(95,208,138,.2);border:1px solid rgba(95,208,138,.45)}
+  .layer.c .tag{color:#04222e;background:rgba(90,200,250,.2);border:1px solid rgba(90,200,250,.45)}
+  .layer.k .tag{color:#3a1400;background:rgba(255,138,107,.2);border:1px solid rgba(255,138,107,.45)}
+
+  .phases{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+  .phase{border:1px solid var(--line);border-radius:16px;padding:18px;background:linear-gradient(180deg,var(--card),#0c1017);position:relative}
+  .phase .p{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+  .phase h3{margin:6px 0 4px;font-size:16.5px;font-weight:620}
+  .phase .when{font-family:var(--mono);font-size:11px;color:var(--faint);margin-bottom:10px}
+  .phase ul{margin:0;padding-left:17px;color:var(--muted);font-size:13px} .phase li{margin:5px 0}
+  .phase .risk{margin-top:11px;font-size:12px;color:var(--faint)} .phase .risk b{color:var(--muted)}
+  .phase .pct{position:absolute;top:16px;right:18px;font-family:var(--mono);font-size:20px;font-weight:600}
+  .phase.now{border-color:rgba(95,208,138,.32)} .phase.now .pct{color:var(--hi)}
+  .phase.trial{border-color:rgba(90,200,250,.28)} .phase.trial .pct{color:var(--accent)}
+  .phase.deep{border-color:rgba(167,139,250,.28)} .phase.deep .pct{color:var(--violet)}
+
+  .tblwrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+  table{border-collapse:collapse;width:100%;min-width:640px;font-size:13px}
+  th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line)}
+  th{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);font-weight:600}
+  td.tok{font-family:var(--mono);color:var(--ink);font-size:12px;white-space:nowrap}
+  td.val{font-family:var(--mono);color:var(--accent);font-variant-numeric:tabular-nums;white-space:nowrap}
+  tr:last-child td{border-bottom:none}
+  .where{font-size:12.5px;color:var(--muted)}
+  .g{color:var(--hi)} .b{color:var(--accent)} .v{color:var(--violet)}
+
+  .ceil{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+  .ceil div{border:1px dashed var(--line-strong);border-radius:12px;padding:14px 16px;background:rgba(255,138,107,.03)}
+  .ceil h4{margin:0 0 4px;font-size:13.5px;color:var(--lo)} .ceil p{margin:0;color:var(--muted);font-size:12.5px}
+  .foot{margin-top:40px;padding-top:18px;border-top:1px solid var(--line);color:var(--faint);font-size:12.5px;max-width:74ch}
+  .foot b{color:var(--muted)}
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Material Lab · strategy</p>
+  <h1>Pixel-Parity Strategy</h1>
+  <p class="lede">Synthesized from <b>30 measured/referenced tokens</b>, five research threads, and a working shader prototype. It answers one question — how far, and by what path, can this Ubuntu box actually reach macOS Tahoe — and maps every measured number to where it gets applied.</p>
+
+  <div class="verdict">
+    <h2>The verdict</h2>
+    <p><b>Every gap is one of three layers, and only the compositor is the real lever.</b> Static appearance (color, radius, font, spacing) is fully closable on your current GNOME with the measured tokens — that's ~80% and it costs nothing. The remaining structural 15–20% (live glass, global menu, squircle window masks) lives in the compositor and only exists on KWin. So the plan is a hybrid: <b>bank the theme-layer win on GNOME now</b>, then <b>trial Plasma alongside</b> (installed, session-switchable, reversible — not a reinstall) to reach for the structural ceiling. No Kubuntu wipe required.</p>
+  </div>
+
+  <section>
+    <div class="sh"><span class="num">01</span><h2>The three layers</h2></div>
+    <p class="sub">Where each gap actually lives decides who can close it.</p>
+    <div class="layers">
+      <div class="layer t"><div class="lname">THEME</div><div class="desc">Colors, corner radii, fonts, spacing, traffic lights, accent palette. <b>Data-driven — the tokens fully specify it.</b></div><div class="tag">closable on GNOME now</div></div>
+      <div class="layer c"><div class="lname">COMPOSITOR</div><div class="desc">Live backdrop blur behind windows & menus, squircle window masks, a real global menu. <b>Mutter can't; KWin can.</b></div><div class="tag">KWin / Plasma only</div></div>
+      <div class="layer k"><div class="lname">TOOLKIT</div><div class="desc">Dynamic ink (adaptive foreground), spring physics, true concentric widget corners. <b>Needs GTK/Qt cooperation — per-app at best.</b></div><div class="tag">not fully closable</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sh"><span class="num">02</span><h2>The plan</h2></div>
+    <p class="sub">Three phases, each independently worth doing — you can stop after any one.</p>
+    <div class="phases">
+      <div class="phase now"><span class="pct">~80%</span><div class="p">Phase 0 · now</div><h3>Apply the tokens on GNOME</h3><div class="when">zero risk · reversible · hours</div>
+        <ul>
+          <li>Push the 30 measured tokens into the MacTahoe GTK theme + gsettings</li>
+          <li>Traffic lights 14/24/26pt, window radii, card 9pt, accent palette, selection #2962D9 vs tint #007AFF</li>
+          <li>Menu bar → 31px, blur-my-shell "Tinted" profile for legibility</li>
+        </ul>
+        <div class="risk"><b>Delivers:</b> static appearance parity. <b>Ceiling:</b> no live glass / global menu / squircles.</div>
+      </div>
+      <div class="phase trial"><span class="pct">~90%</span><div class="p">Phase 1 · trial</div><h3>Plasma alongside GNOME</h3><div class="when">reversible · a login away · not a reinstall</div>
+        <ul>
+          <li><span class="b">apt install kde-plasma-desktop</span>; pick Plasma at the login screen, GNOME stays intact</li>
+          <li>MacTahoe-kde + Kvantum + Better Blur (real frosted glass on windows & menus)</li>
+          <li>Global Menu widget, KDE-Rounded-Corners squircle shader, same tokens drive it</li>
+        </ul>
+        <div class="risk"><b>Delivers:</b> the structural gaps. <b>Cost:</b> coexistence is messy (dupe apps, DM churn) — commit only if the trial convinces.</div>
+      </div>
+      <div class="phase deep"><span class="pct">~95%</span><div class="p">Phase 2 · deep</div><h3>Write Liquid Glass</h3><div class="when">only on KWin · days–weeks</div>
+        <ul>
+          <li>Fork Better Blur; add the Lab's refraction + specular passes as GLSL</li>
+          <li>The prototype shader ports nearly 1:1 — backdrop sampling is the same shape</li>
+          <li>Tune to tokens: squircle n≈4, restrained refraction, Clear/Tinted states</li>
+        </ul>
+        <div class="risk"><b>Delivers:</b> real lensing glass — the best on any Linux DE. <b>Ceiling:</b> still no dynamic-ink vibrancy.</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="sh"><span class="num">03</span><h2>Token → implementation map</h2></div>
+    <p class="sub">The synthesis payoff: every measured number, and exactly where it lands.</p>
+    <div class="tblwrap"><table>
+      <thead><tr><th>Token</th><th>Measured</th><th>Where it applies</th></tr></thead>
+      <tbody>
+        <tr><td class="tok">window radius (3 tiers)</td><td class="val">16 / 20 / 26pt</td><td class="where"><span class="b">P1</span> KWin Aurorae + KDE-Rounded-Corners · <span class="g">P0</span> GTK CSS (approx)</td></tr>
+        <tr><td class="tok">squircle.exponent</td><td class="val">n ≈ 4</td><td class="where"><span class="b">P1</span> KDE-Rounded-Corners squircle mode · <span class="v">P2</span> shader SDF</td></tr>
+        <tr><td class="tok">trafficLight d/space/inset</td><td class="val">14 / 24 / 26pt</td><td class="where"><span class="g">P0</span> theme window-button CSS</td></tr>
+        <tr><td class="tok">card.cornerRadius</td><td class="val">9pt</td><td class="where"><span class="g">P0</span> GTK list/card CSS</td></tr>
+        <tr><td class="tok">list.rowHeight / sidebar sel.</td><td class="val">44 / 33pt</td><td class="where"><span class="g">P0</span> GTK CSS metrics</td></tr>
+        <tr><td class="tok">accent.palette (8 hues)</td><td class="val">#4380E8 …</td><td class="where"><span class="g">P0</span> theme accent + <span class="b">P1</span> Kvantum color-scheme</td></tr>
+        <tr><td class="tok">selection.fill vs tint</td><td class="val">#2962D9 / #007AFF</td><td class="where"><span class="g">P0</span> two distinct theme colors (not one)</td></tr>
+        <tr><td class="tok">material.blur / states</td><td class="val">σ≈24 · Clear|Tinted</td><td class="where"><span class="g">P0</span> blur-my-shell · <span class="b">P1</span> Better Blur · <span class="v">P2</span> shader</td></tr>
+        <tr><td class="tok">menuBar.height</td><td class="val">31px</td><td class="where"><span class="g">P0</span> Just Perfection panel size</td></tr>
+        <tr><td class="tok">SF Pro · crossover · body</td><td class="val">20pt · 13pt</td><td class="where"><span class="g">✓ done</span> fontconfig + gsettings + gtk</td></tr>
+        <tr><td class="tok">appearance.auto</td><td class="val">sun-based</td><td class="where"><span class="g">✓ done</span> Phoenix solar timer</td></tr>
+        <tr><td class="tok">liquidGlass lensing</td><td class="val">refract+spec</td><td class="where"><span class="v">P2</span> the KWin effect (nowhere else)</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <div class="sh"><span class="num">04</span><h2>Ceilings we accept</h2></div>
+    <p class="sub">Honest — no path on Linux closes these, so the plan doesn't pretend to.</p>
+    <div class="ceil">
+      <div><h4>Dynamic ink</h4><p>Adaptive foreground on glass needs the app's own toolkit to cooperate. Compositor-only can't. ~unreachable.</p></div>
+      <div><h4>Squircle exactness</h4><p>n≈4 approximates it; Apple's real corner is tuned Bézier, published nowhere. Pixel-exact is impossible.</p></div>
+      <div><h4>Spring motion</h4><p>Real physics only inside libadwaita apps you patch; shells do easing curves, not springs.</p></div>
+      <div><h4>Refraction fidelity</h4><p>P2 gets convincing lensing, but not Tahoe's exact specular/edge model — that's a rendering pipeline we can't fully mirror.</p></div>
+    </div>
+  </section>
+
+  <p class="foot"><b>Recommended entry point:</b> Phase 0 now — it's the highest value-per-risk, applies everything measured, and improves your live desktop today without touching the DE. Phase 1 is the real decision point: try Plasma in a parallel session, and only commit if the live glass + global menu earn the coexistence mess. Phase 2 is a genuine build project, worthwhile only once you're on KWin. Every number here traces back to a measurement or an Apple reference in the calibration sheet.</p>
+</div>

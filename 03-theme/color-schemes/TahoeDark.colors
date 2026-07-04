@@ -1,0 +1,166 @@
+# ============================================================================
+# Tahoe-Liquid-Glass · DARK color scheme
+# ----------------------------------------------------------------------------
+# Same palette, dark material substrate.
+#   dark material            #2B2E31  (43,46,49)    -> Window/View/Header Bg
+#   accent (default)  Blue   #4380E8  (67,128,232)
+#   sidebar selection fill   dark uses the #0058D0 -> #3C6BD2 gradient; the flat
+#                            scheme value is #0058D0 (0,88,208), gradient endpoint
+#                            #3C6BD2 (60,107,210) used as BackgroundAlternate.
+#   focus ring               #0A84FF  (10,132,255)  -> DecorationFocus, 3px via KWin
+#   text NEVER tinted        ForegroundNormal = #DEDEDE neutral
+#
+# Install as ~/.local/share/color-schemes/TahoeDark.colors
+# Apply:  plasma-apply-colorscheme TahoeDark
+# ============================================================================
+
+[General]
+ColorScheme=TahoeDark
+Name=Tahoe Dark
+shadeSortColumn=true
+accentColor=67,128,232
+
+[Colors:Window]
+BackgroundNormal=43,46,49
+BackgroundAlternate=51,54,58
+ForegroundNormal=222,222,222
+ForegroundInactive=127,127,127
+ForegroundActive=67,128,232
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255
+DecorationHover=67,128,232
+
+[Colors:View]
+BackgroundNormal=43,46,49
+BackgroundAlternate=51,54,58
+ForegroundNormal=222,222,222
+ForegroundInactive=127,127,127
+ForegroundActive=67,128,232
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255
+DecorationHover=67,128,232
+
+[Colors:Button]
+BackgroundNormal=58,62,66
+BackgroundAlternate=51,54,58
+ForegroundNormal=222,222,222
+ForegroundInactive=127,127,127
+ForegroundActive=67,128,232
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255
+DecorationHover=67,128,232
+
+# SELECTION = dark sidebar fill #0058D0 (gradient endpoint #3C6BD2 as Alternate).
+# Selected text stays white — tint the fill, not the text.
+[Colors:Selection]
+BackgroundNormal=0,88,208
+BackgroundAlternate=60,107,210
+ForegroundNormal=255,255,255
+ForegroundInactive=210,224,252
+ForegroundActive=255,255,255
+ForegroundLink=219,176,71
+ForegroundVisited=210,200,240
+ForegroundNegative=255,255,255
+ForegroundNeutral=255,255,255
+ForegroundPositive=255,255,255
+DecorationFocus=255,255,255
+DecorationHover=131,164,255
+
+[Colors:Tooltip]
+BackgroundNormal=51,54,58
+BackgroundAlternate=58,62,66
+ForegroundNormal=222,222,222
+ForegroundInactive=150,150,150
+ForegroundActive=67,128,232
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255
+DecorationHover=67,128,232
+
+[Colors:Complementary]
+BackgroundNormal=30,32,34
+BackgroundAlternate=43,46,49
+ForegroundNormal=239,240,241
+ForegroundInactive=127,127,127
+ForegroundActive=67,128,232
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255
+DecorationHover=67,128,232
+
+[Colors:Header]
+BackgroundNormal=43,46,49
+BackgroundAlternate=51,54,58
+ForegroundNormal=222,222,222
+ForegroundInactive=127,127,127
+ForegroundActive=67,128,232
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255
+DecorationHover=67,128,232
+
+[Colors:Header][Inactive]
+BackgroundNormal=40,43,46
+BackgroundAlternate=48,51,55
+ForegroundNormal=222,222,222,150
+ForegroundInactive=127,127,127,150
+ForegroundActive=67,128,232,150
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255,150
+DecorationHover=67,128,232
+
+[WM]
+activeBackground=43,46,49
+activeForeground=222,222,222
+activeBlend=86,86,86
+inactiveBackground=40,43,46
+inactiveForeground=127,127,127
+inactiveBlend=102,102,102
+
+[ColorEffects:Inactive]
+Enable=false
+ChangeSelectionColor=true
+Color=112,111,110
+ColorAmount=0.025
+ColorEffect=2
+ContrastAmount=0.1
+ContrastEffect=2
+IntensityAmount=0
+IntensityEffect=0
+
+[ColorEffects:Disabled]
+Color=56,56,56
+ColorAmount=0
+ColorEffect=0
+ContrastAmount=0.65
+ContrastEffect=1
+IntensityAmount=0.1
+IntensityEffect=2
+
+[KDE]
+contrast=4

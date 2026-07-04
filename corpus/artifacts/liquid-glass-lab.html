@@ -1,0 +1,386 @@
+<title>Liquid Glass Lab</title>
+<style>
+  :root{
+    --ground:#090c12; --panel:rgba(16,20,28,.55); --panel-solid:#11151d;
+    --line:rgba(255,255,255,.09); --line-strong:rgba(255,255,255,.16);
+    --ink:#e8edf5; --muted:#8b95a7; --faint:#5c6675;
+    --accent:#5ac8fa; --accent-dim:#2b6f92; --warm:#ff9f6b;
+    --ui: ui-sans-serif,-apple-system,"SF Pro Text","Helvetica Neue",Inter,system-ui,sans-serif;
+    --mono: ui-monospace,"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0;background:var(--ground);color:var(--ink);font-family:var(--ui);
+    overflow:hidden;-webkit-font-smoothing:antialiased;
+  }
+  #stage{position:fixed;inset:0;display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+  #stage.grabbing{cursor:grabbing}
+
+  .head{position:fixed;top:22px;left:24px;z-index:5;pointer-events:none;max-width:70vw}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.28em;text-transform:uppercase;
+    color:var(--accent);opacity:.85;margin:0 0 6px}
+  .head h1{margin:0;font-size:clamp(26px,4vw,42px);font-weight:650;letter-spacing:-.02em;line-height:1;
+    text-shadow:0 2px 30px rgba(0,0,0,.5)}
+  .head p{margin:8px 0 0;color:var(--muted);font-size:13.5px;letter-spacing:.01em;text-shadow:0 1px 12px rgba(0,0,0,.6)}
+
+  .caption{position:fixed;z-index:4;pointer-events:none;transform:translate(-50%,-50%);
+    font-family:var(--mono);font-size:10px;letter-spacing:.22em;text-transform:uppercase;
+    color:rgba(255,255,255,.92);text-shadow:0 1px 8px rgba(0,0,0,.55);opacity:.85}
+
+  /* frosted control dock — the tool dogfoods the material it's tuning */
+  .dock{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:6;width:min(940px,calc(100vw - 28px));
+    background:var(--panel);backdrop-filter:blur(26px) saturate(170%);-webkit-backdrop-filter:blur(26px) saturate(170%);
+    border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.08);
+    padding:14px 16px 16px}
+  .presets{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:13px}
+  .chip{font-family:var(--ui);font-size:12.5px;font-weight:550;color:var(--muted);cursor:pointer;
+    background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:999px;padding:7px 13px;
+    transition:.16s ease;letter-spacing:.01em}
+  .chip:hover{color:var(--ink);border-color:var(--line-strong);background:rgba(255,255,255,.07)}
+  .chip[aria-pressed="true"]{color:#04121a;background:var(--accent);border-color:var(--accent);
+    box-shadow:0 0 0 1px var(--accent),0 6px 18px rgba(90,200,250,.35)}
+  .chip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(158px,1fr));gap:11px 18px}
+  .ctl{display:flex;flex-direction:column;gap:5px}
+  .ctl .row{display:flex;justify-content:space-between;align-items:baseline}
+  .ctl label{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint)}
+  .ctl .val{font-family:var(--mono);font-size:11.5px;color:var(--accent);font-variant-numeric:tabular-nums}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:3px;border-radius:3px;
+    background:linear-gradient(90deg,var(--accent-dim),rgba(255,255,255,.14));outline:none;cursor:pointer}
+  input[type=range]:disabled{opacity:.35;cursor:default}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;
+    background:#eaf6ff;border:2px solid var(--accent);box-shadow:0 1px 5px rgba(0,0,0,.5);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:#eaf6ff;
+    border:2px solid var(--accent);cursor:pointer}
+  input[type=range]:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+
+  .bar{display:flex;align-items:center;gap:8px;margin-top:13px;flex-wrap:wrap}
+  .btn{font-family:var(--ui);font-size:12.5px;font-weight:550;color:var(--ink);cursor:pointer;
+    background:rgba(255,255,255,.05);border:1px solid var(--line);border-radius:10px;padding:8px 13px;transition:.16s ease}
+  .btn:hover{background:rgba(255,255,255,.09);border-color:var(--line-strong)}
+  .btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  .btn.on{color:#04121a;background:var(--warm);border-color:var(--warm)}
+  .swatches{display:flex;gap:6px;margin-left:auto;align-items:center}
+  .swatches .lbl{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-right:2px}
+  .sw{width:20px;height:20px;border-radius:6px;cursor:pointer;border:1px solid rgba(255,255,255,.25)}
+  .sw[aria-pressed="true"]{outline:2px solid var(--ink);outline-offset:2px}
+
+  /* GLSL drawer */
+  .drawer{position:fixed;top:0;right:0;height:100%;width:min(560px,92vw);z-index:8;
+    background:rgba(9,12,18,.82);backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px);
+    border-left:1px solid var(--line-strong);transform:translateX(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);
+    display:flex;flex-direction:column}
+  .drawer.open{transform:translateX(0)}
+  .drawer header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid var(--line)}
+  .drawer header h2{margin:0;font-size:14px;font-weight:600;letter-spacing:.01em}
+  .drawer header .sub{font-family:var(--mono);font-size:10.5px;color:var(--faint);letter-spacing:.05em}
+  .drawer .code{flex:1;overflow:auto;margin:0;padding:16px 18px;font-family:var(--mono);font-size:11.5px;
+    line-height:1.65;color:#c9d4e2;white-space:pre;tab-size:2}
+  .drawer .code .k{color:var(--accent)}
+  .drawer .code .c{color:var(--faint);font-style:italic}
+  .dclose{cursor:pointer;background:none;border:none;color:var(--muted);font-size:20px;line-height:1;padding:2px 6px}
+  .dclose:hover{color:var(--ink)}
+
+  .note{position:fixed;bottom:20px;left:24px;z-index:5;max-width:230px;font-size:11.5px;color:var(--faint);
+    line-height:1.5;pointer-events:none}
+  .note b{color:var(--muted);font-weight:600}
+  @media (max-width:720px){ .head p{display:none} .note{display:none} }
+  .glerr{position:fixed;inset:0;display:grid;place-items:center;font-family:var(--mono);color:var(--warm);padding:24px;text-align:center}
+</style>
+
+<canvas id="stage"></canvas>
+<div class="head">
+  <p class="eyebrow">Material Lab · real-time GLSL</p>
+  <h1>Liquid&nbsp;Glass</h1>
+  <p>Drag the panels over the desktop. Pick a look, then tune the optics — the shader running here is the shader you'd port to KWin or Hyprland.</p>
+</div>
+<div class="caption" id="capA">Window</div>
+<div class="caption" id="capB">Menu</div>
+
+<div class="note"><b>Why it must live in the compositor:</b> only the layer below owns the pixels behind a surface. This canvas fakes that with one backdrop texture — a real effect samples the framebuffer.</div>
+
+<div class="dock" role="group" aria-label="Liquid Glass controls">
+  <div class="presets" id="presets"></div>
+  <div class="grid" id="sliders"></div>
+  <div class="bar">
+    <button class="btn" id="lightBtn" aria-pressed="false">Animate light</button>
+    <button class="btn" id="glslBtn">View GLSL</button>
+    <button class="btn" id="resetBtn">Reset panels</button>
+    <div class="swatches" id="swatches">
+      <span class="lbl">Tint</span>
+    </div>
+  </div>
+</div>
+
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <header>
+    <div><h2>Fragment shader</h2><div class="sub">glsl · es 1.0 · the live source</div></div>
+    <div style="display:flex;gap:6px;align-items:center">
+      <button class="btn" id="copyBtn" style="padding:6px 11px">Copy</button>
+      <button class="dclose" id="drawerClose" aria-label="Close">&times;</button>
+    </div>
+  </header>
+  <pre class="code" id="codebox"></pre>
+</aside>
+
+<script>
+(function(){
+"use strict";
+const cvs = document.getElementById('stage');
+const gl = cvs.getContext('webgl',{premultipliedAlpha:false,antialias:false});
+if(!gl){ document.body.insertAdjacentHTML('beforeend','<div class="glerr">WebGL isn\'t available in this browser — the live demo needs it.</div>'); return; }
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- backdrop: a procedurally painted Tahoe-ish desktop ---------- */
+const scene = document.createElement('canvas');
+const sctx = scene.getContext('2d');
+function roundRect(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
+function paintScene(W,H){
+  scene.width=W; scene.height=H;
+  const c=sctx;
+  // wallpaper: layered radial "mesh" in Tahoe hues
+  c.fillStyle='#0b1230'; c.fillRect(0,0,W,H);
+  const blobs=[[0.18,0.22,'#3aa0ff',0.9],[0.82,0.16,'#7a5cff',0.85],[0.72,0.82,'#ff8a5c',0.7],[0.28,0.85,'#22c1a8',0.8],[0.5,0.45,'#2b6fff',0.6]];
+  for(const [fx,fy,col,a] of blobs){
+    const g=c.createRadialGradient(fx*W,fy*H,0,fx*W,fy*H,Math.max(W,H)*0.55);
+    g.addColorStop(0,col); g.addColorStop(1,'rgba(0,0,0,0)');
+    c.globalAlpha=a; c.fillStyle=g; c.fillRect(0,0,W,H);
+  }
+  c.globalAlpha=1;
+  const S=Math.min(W,H)/900; // scale factor
+  // menu bar
+  c.fillStyle='rgba(255,255,255,.14)'; c.fillRect(0,0,W,30*S);
+  c.fillStyle='rgba(0,0,0,.55)';
+  [40,86,120,160].forEach((x,i)=>{c.fillRect(x*S,11*S,(i?26:14)*S,8*S);});
+  c.fillRect(W-70*S,11*S,44*S,8*S); c.fillRect(W-150*S,11*S,60*S,8*S);
+  // an app window (colorful content → gives refraction sharp edges + text)
+  function win(x,y,w,h,accent){
+    c.save();
+    c.shadowColor='rgba(0,0,0,.45)'; c.shadowBlur=40*S; c.shadowOffsetY=18*S;
+    roundRect(c,x,y,w,h,16*S); c.fillStyle='#f4f6fb'; c.fill(); c.restore();
+    roundRect(c,x,y,w,h,16*S); c.save(); c.clip();
+    // title bar
+    c.fillStyle='#e7ebf2'; c.fillRect(x,y,w,34*S);
+    const tl=['#ff5f57','#febc2e','#28c840'];
+    tl.forEach((col,i)=>{c.beginPath();c.arc(x+20*S+i*18*S,y+17*S,6*S,0,7);c.fillStyle=col;c.fill();});
+    // sidebar
+    c.fillStyle=accent; c.globalAlpha=.16; c.fillRect(x,y+34*S,150*S,h); c.globalAlpha=1;
+    c.fillStyle=accent; [0,1,2,3].forEach(i=>c.fillRect(x+16*S,y+58*S+i*30*S,110*S,12*S));
+    // content: text lines + a colored card
+    c.fillStyle='#c9d2e0';
+    for(let i=0;i<7;i++)c.fillRect(x+176*S,y+64*S+i*26*S,(w-210*S)*(i%3?0.9:0.6),10*S);
+    roundRect(c,x+176*S,y+h-120*S,(w-206*S),90*S,12*S); c.fillStyle=accent; c.globalAlpha=.9; c.fill(); c.globalAlpha=1;
+    c.restore();
+  }
+  win(W*0.30,H*0.30,W*0.40,H*0.44,'#3a7bff');
+  win(W*0.66,H*0.16,W*0.30,H*0.30,'#22b39a');
+  // dock
+  const dw=Math.min(W*0.5,560*S), dh=64*S, dx=(W-dw)/2, dy=H-dh-22*S;
+  c.save(); c.shadowColor='rgba(0,0,0,.4)'; c.shadowBlur=40*S; c.shadowOffsetY=14*S;
+  roundRect(c,dx,dy,dw,dh,20*S); c.fillStyle='rgba(255,255,255,.22)'; c.fill(); c.restore();
+  const cols=['#ff6b6b','#ffa94d','#ffd43b','#51cf66','#22b8cf','#4dabf7','#845ef7','#f06595'];
+  const n=cols.length, pad=14*S, tile=(dw-pad*2)/n;
+  cols.forEach((col,i)=>{roundRect(c,dx+pad+i*tile+3*S,dy+8*S,tile-6*S,dh-16*S,11*S);c.fillStyle=col;c.fill();});
+}
+
+/* ---------- shaders ---------- */
+const VERT = 'attribute vec2 p;void main(){gl_Position=vec4(p,0.,1.);}';
+const FRAG = `
+precision highp float;
+uniform sampler2D u_backdrop;
+uniform vec2  u_res;
+uniform float u_blur, u_refract, u_edge, u_spec, u_chroma, u_tintAmt, u_nsq, u_vibrancy, u_light;
+uniform vec3  u_tint;
+uniform vec4  u_p0, u_p1;   // xy = center(px), zw = half-size(px)
+uniform vec2  u_r;          // corner radius per panel
+
+// signed distance to a p-norm rounded box (n=2 circular corners, n>2 -> squircle)
+float sdBox(vec2 p, vec2 half, float r, float n){
+  vec2 q = abs(p) - (half - vec2(r));
+  float outside = pow( pow(max(q.x,0.0),n) + pow(max(q.y,0.0),n), 1.0/n );
+  float inside  = min(max(q.x,q.y), 0.0);
+  return outside + inside - r;
+}
+// cheap frosted blur: golden-angle spiral taps
+vec3 frost(vec2 uv, float radius){
+  vec3 acc = texture2D(u_backdrop, uv).rgb; float tot = 1.0;
+  for(int i=1;i<=10;i++){
+    float a = float(i)*2.399963; float rr = radius*sqrt(float(i)/10.0);
+    vec2 o = vec2(cos(a),sin(a))*rr / u_res;
+    acc += texture2D(u_backdrop, uv+o).rgb; tot += 1.0;
+  }
+  return acc/tot;
+}
+vec4 glass(vec2 fp, vec2 uv, vec4 P, float r){
+  vec2 p = fp - P.xy; vec2 half = P.zw;
+  float d = sdBox(p, half, r, u_nsq);
+  float cov = smoothstep(1.0, -1.0, d);           // inside coverage (AA)
+  if(cov <= 0.001) return vec4(0.0);
+  // surface normal from the SDF gradient (the bevel that bends light)
+  float e=1.0;
+  float dx = sdBox(p+vec2(e,0.),half,r,u_nsq)-sdBox(p-vec2(e,0.),half,r,u_nsq);
+  float dy = sdBox(p+vec2(0.,e),half,r,u_nsq)-sdBox(p-vec2(0.,e),half,r,u_nsq);
+  vec2 grad = normalize(vec2(dx,dy)+1e-6);        // points outward
+  float edge = 1.0 - smoothstep(0.0, u_edge, -d); // 1 at rim -> 0 in center
+  // refraction: displace the backdrop sample inward along the bevel
+  vec2 uvR = uv - grad * (u_refract*edge*60.0) / u_res;
+  vec2 ca  = grad * (u_chroma*edge*42.0) / u_res;
+  vec3 col = frost(uvR, u_blur);
+  if(u_chroma > 0.001){ col.r = frost(uvR+ca, u_blur).r; col.b = frost(uvR-ca, u_blur).b; } // chromatic edges
+  col = mix(col, u_tint, u_tintAmt);              // material tint
+  // vibrancy: keep content legible by lifting saturation + contrast
+  float lum = dot(col, vec3(0.299,0.587,0.114));
+  col = mix(col, mix(vec3(lum), col, 1.45), u_vibrancy);
+  col = mix(col, (col-0.5)*1.14+0.5, u_vibrancy*0.55);
+  // specular: fake 3D bevel lit by a moving light
+  vec2 L = vec2(cos(u_light), sin(u_light));
+  vec3 N3 = normalize(vec3(grad*1.6, 1.0));
+  vec3 L3 = normalize(vec3(L, 0.7));
+  col += pow(max(dot(N3,L3),0.0), 60.0) * u_spec * (edge*0.9+0.1);
+  col += smoothstep(1.6,0.0,abs(d))*0.14;         // bright rim line
+  col += edge*0.03;                               // faint inner glow
+  return vec4(col, cov);
+}
+void main(){
+  vec2 fp = gl_FragCoord.xy; vec2 uv = fp/u_res;
+  vec3 base = texture2D(u_backdrop, uv).rgb;
+  // soft cast shadows so panels float
+  float s0 = smoothstep(34.0,-8.0, sdBox(fp-(u_p0.xy+vec2(0.,-9.)), u_p0.zw+8.0, u_r.x, u_nsq));
+  float s1 = smoothstep(34.0,-8.0, sdBox(fp-(u_p1.xy+vec2(0.,-9.)), u_p1.zw+8.0, u_r.y, u_nsq));
+  base *= 1.0 - 0.30*max(s0,s1);
+  vec3 outc = base;
+  vec4 g0 = glass(fp, uv, u_p0, u_r.x); outc = mix(outc, g0.rgb, g0.a);
+  vec4 g1 = glass(fp, uv, u_p1, u_r.y); outc = mix(outc, g1.rgb, g1.a);
+  gl_FragColor = vec4(outc, 1.0);
+}`;
+function compile(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);
+  if(!gl.getShaderParameter(s,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(s));return s;}
+const prog=gl.createProgram();
+try{gl.attachShader(prog,compile(gl.VERTEX_SHADER,VERT));gl.attachShader(prog,compile(gl.FRAGMENT_SHADER,FRAG));
+  gl.linkProgram(prog);if(!gl.getProgramParameter(prog,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(prog));}
+catch(err){document.body.insertAdjacentHTML('beforeend','<div class="glerr">Shader error:\\n'+err.message+'</div>');return;}
+gl.useProgram(prog);
+const quad=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,quad);
+gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,3,-1,-1,3]),gl.STATIC_DRAW);
+const pl=gl.getAttribLocation(prog,'p');gl.enableVertexAttribArray(pl);gl.vertexAttribPointer(pl,2,gl.FLOAT,false,0,0);
+const tex=gl.createTexture();gl.bindTexture(gl.TEXTURE_2D,tex);
+gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL,true);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+const U=n=>gl.getUniformLocation(prog,n);
+const uni={res:U('u_res'),blur:U('u_blur'),refract:U('u_refract'),edge:U('u_edge'),spec:U('u_spec'),
+  chroma:U('u_chroma'),tintAmt:U('u_tintAmt'),nsq:U('u_nsq'),vib:U('u_vibrancy'),light:U('u_light'),
+  tint:U('u_tint'),p0:U('u_p0'),p1:U('u_p1'),r:U('u_r')};
+
+/* ---------- state ---------- */
+const TINTS={cool:[0.52,0.64,0.86],neutral:[0.72,0.75,0.82],warm:[0.92,0.72,0.58]};
+const params={blur:24,refract:0.75,edge:56,spec:0.5,chroma:0.15,tintAmt:0.10,radius:28,nsq:4.0,vib:0.5,light:0.9,tint:'cool',animate:true};
+// panels stored as fractions of viewport + CSS half-size
+const panels=[{fx:0.40,fy:0.55,hw:190,hh:140},{fx:0.70,fy:0.36,hw:150,hh:30}];
+
+const PRESETS={
+  Frosted:{blur:20,refract:0,edge:44,spec:0.15,chroma:0,tintAmt:0.11,nsq:2.3,vib:0.22,tint:'neutral',animate:false},
+  Lensed:{blur:14,refract:1.05,edge:62,spec:0.22,chroma:0,tintAmt:0.06,nsq:3.0,vib:0.28,tint:'cool',animate:false},
+  Specular:{blur:12,refract:0.7,edge:56,spec:0.95,chroma:0,tintAmt:0.06,nsq:3.0,vib:0.28,tint:'neutral',animate:true},
+  Chromatic:{blur:10,refract:0.95,edge:56,spec:0.45,chroma:1.1,tintAmt:0.04,nsq:3.3,vib:0.32,tint:'cool',animate:false},
+  Vibrant:{blur:16,refract:0.5,edge:52,spec:0.3,chroma:0.15,tintAmt:0.10,nsq:2.6,vib:0.92,tint:'cool',animate:false},
+  'Full Liquid Glass':{blur:24,refract:0.75,edge:56,spec:0.5,chroma:0.15,tintAmt:0.10,radius:28,nsq:4.0,vib:0.5,tint:'cool',animate:true}
+};
+
+/* ---------- controls UI ---------- */
+const SLIDERS=[
+  ['blur','Blur',0,30,0.5],['refract','Refraction',0,2,0.01],['edge','Edge width',10,120,1],
+  ['spec','Specular',0,1.5,0.01],['chroma','Chromatic',0,2,0.01],['tintAmt','Tint',0,0.4,0.01],
+  ['radius','Corner',0,80,1],['nsq','Squircle',2,6,0.1],['vib','Vibrancy',0,1,0.01],['light','Light',0,6.28,0.01]
+];
+const sEl={};
+const sliders=document.getElementById('sliders');
+SLIDERS.forEach(([k,label,min,max,step])=>{
+  const w=document.createElement('div');w.className='ctl';
+  w.innerHTML=`<div class="row"><label for="s_${k}">${label}</label><span class="val" id="v_${k}"></span></div>`;
+  const inp=document.createElement('input');inp.type='range';inp.id='s_'+k;inp.min=min;inp.max=max;inp.step=step;
+  inp.addEventListener('input',()=>{params[k]=parseFloat(inp.value);if(k==='light')params.animate=false,syncLightBtn();writeVals();clearPreset();});
+  w.appendChild(inp);sliders.appendChild(w);sEl[k]=inp;
+});
+const presetWrap=document.getElementById('presets');
+Object.keys(PRESETS).forEach(name=>{
+  const b=document.createElement('button');b.className='chip';b.type='button';b.textContent=name;b.setAttribute('aria-pressed','false');
+  b.addEventListener('click',()=>applyPreset(name));presetWrap.appendChild(b);
+});
+const swWrap=document.getElementById('swatches');
+Object.entries(TINTS).forEach(([k,rgb])=>{
+  const b=document.createElement('button');b.className='sw';b.type='button';b.title=k;b.setAttribute('aria-pressed','false');
+  b.style.background=`rgb(${rgb.map(v=>Math.round(v*255)).join(',')})`;
+  b.addEventListener('click',()=>{params.tint=k;syncSwatches();clearPreset();});
+  swWrap.appendChild(b);b.dataset.k=k;
+});
+function writeVals(){SLIDERS.forEach(([k])=>{sEl[k].value=params[k];const v=document.getElementById('v_'+k);
+  v.textContent=(k==='light')?params[k].toFixed(2)+' rad':(Number.isInteger(params[k])?params[k]:params[k].toFixed(2));});
+  sEl.light.disabled=params.animate;}
+function syncSwatches(){swWrap.querySelectorAll('.sw').forEach(s=>s.setAttribute('aria-pressed',String(s.dataset.k===params.tint)));}
+function clearPreset(){presetWrap.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed','false'));}
+function markPreset(name){presetWrap.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',String(c.textContent===name)));}
+function syncLightBtn(){lightBtn.classList.toggle('on',params.animate);lightBtn.setAttribute('aria-pressed',String(params.animate));sEl.light.disabled=params.animate;}
+function applyPreset(name){const p=PRESETS[name];Object.assign(params,p);writeVals();syncSwatches();syncLightBtn();markPreset(name);}
+
+const lightBtn=document.getElementById('lightBtn');
+lightBtn.addEventListener('click',()=>{params.animate=!params.animate;syncLightBtn();clearPreset();});
+document.getElementById('resetBtn').addEventListener('click',()=>{panels[0].fx=0.40;panels[0].fy=0.55;panels[1].fx=0.70;panels[1].fy=0.36;});
+const drawer=document.getElementById('drawer');
+document.getElementById('glslBtn').addEventListener('click',()=>{drawer.classList.toggle('open');drawer.setAttribute('aria-hidden',String(!drawer.classList.contains('open')));});
+document.getElementById('drawerClose').addEventListener('click',()=>{drawer.classList.remove('open');drawer.setAttribute('aria-hidden','true');});
+document.getElementById('copyBtn').addEventListener('click',async(e)=>{try{await navigator.clipboard.writeText(FRAG);e.target.textContent='Copied';setTimeout(()=>e.target.textContent='Copy',1200);}catch(_){}});
+// syntax-lite highlight for the code box
+document.getElementById('codebox').innerHTML=FRAG.trim()
+  .replace(/[&]/g,'&amp;').replace(/</g,'&lt;')
+  .replace(/(\\/\\/[^\\n]*)/g,'<span class="c">$1</span>')
+  .replace(/\\b(float|vec2|vec3|vec4|uniform|sampler2D|void|return|for|if|precision|highp|mix|smoothstep|normalize|texture2D|pow|max|min|abs|dot|cos|sin|length)\\b/g,'<span class="k">$1</span>');
+
+/* ---------- pointer drag ---------- */
+let drag=null,dpr=1,W=0,H=0;
+function pxPanel(i){return{cx:panels[i].fx*W,cy:panels[i].fy*H,hw:panels[i].hw*dpr,hh:panels[i].hh*dpr};}
+function hit(mx,my){for(let i=panels.length-1;i>=0;i--){const p=pxPanel(i);
+  if(Math.abs(mx-p.cx)<p.hw+18*dpr&&Math.abs(my-p.cy)<p.hh+18*dpr)return i;}return -1;}
+function toDev(e){const r=cvs.getBoundingClientRect();return{x:(e.clientX-r.left)*dpr,y:(H-(e.clientY-r.top)*dpr)};}
+cvs.addEventListener('pointerdown',e=>{const m=toDev(e);const i=hit(m.x,m.y);if(i<0)return;
+  const p=pxPanel(i);drag={i,ox:m.x-p.cx,oy:m.y-p.cy};cvs.setPointerCapture(e.pointerId);cvs.classList.add('grabbing');});
+cvs.addEventListener('pointermove',e=>{if(!drag)return;const m=toDev(e);
+  panels[drag.i].fx=(m.x-drag.ox)/W;panels[drag.i].fy=(m.y-drag.oy)/H;});
+cvs.addEventListener('pointerup',e=>{drag=null;cvs.classList.remove('grabbing');});
+cvs.addEventListener('pointercancel',()=>{drag=null;cvs.classList.remove('grabbing');});
+
+/* ---------- resize + render ---------- */
+function resize(){dpr=Math.min(devicePixelRatio||1,2);W=Math.round(innerWidth*dpr);H=Math.round(innerHeight*dpr);
+  cvs.width=W;cvs.height=H;cvs.style.width=innerWidth+'px';cvs.style.height=innerHeight+'px';
+  paintScene(W,H);gl.bindTexture(gl.TEXTURE_2D,tex);gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,scene);
+  gl.viewport(0,0,W,H);}
+addEventListener('resize',resize);
+
+const capA=document.getElementById('capA'),capB=document.getElementById('capB'),caps=[capA,capB];
+let t0=performance.now();
+function frame(now){
+  const t=(now-t0)/1000;
+  const lightAngle=(params.animate&&!reduce)?t*0.6:params.light;
+  const tint=TINTS[params.tint];
+  gl.uniform2f(uni.res,W,H);
+  gl.uniform1f(uni.blur,params.blur);gl.uniform1f(uni.refract,params.refract);gl.uniform1f(uni.edge,params.edge*dpr);
+  gl.uniform1f(uni.spec,params.spec);gl.uniform1f(uni.chroma,params.chroma);gl.uniform1f(uni.tintAmt,params.tintAmt);
+  gl.uniform1f(uni.nsq,params.nsq);gl.uniform1f(uni.vib,params.vib);gl.uniform1f(uni.light,lightAngle);
+  gl.uniform3f(uni.tint,tint[0],tint[1],tint[2]);
+  const p0=pxPanel(0),p1=pxPanel(1);
+  gl.uniform4f(uni.p0,p0.cx,p0.cy,p0.hw,p0.hh);gl.uniform4f(uni.p1,p1.cx,p1.cy,p1.hw,p1.hh);
+  const rad=params.radius*dpr;
+  gl.uniform2f(uni.r,Math.min(rad,p0.hw,p0.hh),Math.min(rad,p1.hw,p1.hh));
+  gl.drawArrays(gl.TRIANGLES,0,3);
+  // captions follow panels (CSS px, top-left origin)
+  [p0,p1].forEach((p,i)=>{caps[i].style.left=(p.cx/dpr)+'px';caps[i].style.top=((H-p.cy)/dpr)+'px';});
+  requestAnimationFrame(frame);
+}
+resize();writeVals();syncSwatches();syncLightBtn();markPreset('Full Liquid Glass');applyPreset('Full Liquid Glass');
+requestAnimationFrame(frame);
+})();
+</script>

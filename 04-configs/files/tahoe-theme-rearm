@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+# tahoe-theme-rearm — schedule a precise one-shot run at the next sun transition.
+# Called by tahoe-theme-switch.service (ExecStartPost). Uses `systemd-run --user`
+# to create a transient timer that fires exactly at the next sunrise/sunset, so
+# the switch is minute-accurate and self-adjusts across the year without editing
+# unit files. The static tahoe-theme-switch.timer remains as a safety net.
+set -euo pipefail
+
+SWITCH="$HOME/.local/bin/tahoe-theme-switch"
+[[ -x "$SWITCH" ]] || { echo "tahoe-theme-rearm: $SWITCH not found"; exit 1; }
+
+NEXT="$("$SWITCH" next-time)"   # ISO-8601, e.g. 2026-07-03T19:41:00-07:00
+[[ -n "$NEXT" ]] || { echo "tahoe-theme-rearm: could not compute next transition"; exit 1; }
+
+# Cancel any prior transient re-arm timer, then create a fresh one.
+systemctl --user stop tahoe-theme-rearm-oneshot.timer 2>/dev/null || true
+
+# systemd-run accepts an absolute --on-calendar timestamp. Convert ISO to the
+# "YYYY-MM-DD HH:MM:SS" systemd calendar form (drop the tz offset; local time).
+CAL="$(date -d "$NEXT" '+%Y-%m-%d %H:%M:%S')"
+
+systemd-run --user \
+  --unit=tahoe-theme-rearm-oneshot \
+  --on-calendar="$CAL" \
+  --timer-property=AccuracySec=1s \
+  "$SWITCH" apply
+
+echo "tahoe-theme-rearm: next switch armed for $CAL (from $NEXT)"

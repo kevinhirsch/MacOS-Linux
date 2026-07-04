@@ -1,0 +1,22 @@
+{
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "KWin development team"
+            },
+            {
+                "Name": "taj_ny, DaddelZeit, iGerman00 (Better Blur refraction lineage)"
+            },
+            {
+                "Name": "Tahoe Liquid Glass"
+            }
+        ],
+        "Category": "Appearance",
+        "Description": "macOS-Tahoe Liquid Glass: refractive, specular, tinted squircle glass behind panels, menus and window decorations. Fork of the KWin Blur effect (Better Blur lineage).",
+        "EnabledByDefault": false,
+        "License": "GPL",
+        "Id": "tahoe_liquid_glass",
+        "Name": "Tahoe Liquid Glass"
+    },
+    "X-KDE-ConfigModule": "kwin_tahoe_liquid_glass_config"
+}

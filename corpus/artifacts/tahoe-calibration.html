@@ -1,0 +1,467 @@
+<title>macOS Tahoe Calibration Values</title>
+<style>
+  :root {
+    --ground: #0E1116;
+    --surface: #161A21;
+    --surface-2: #1C2129;
+    --hairline: #262C36;
+    --hairline-soft: #1E242D;
+    --ink: #E6E9EF;
+    --ink-dim: #B7BEC9;
+    --muted: #838C9B;
+    --muted-2: #616A78;
+    --accent: #5B9DFF;
+    --high: #3FB950;
+    --med: #D8A93A;
+    --low: #CF6B3F;
+    --apple: #6FA8FF;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Cascadia Code", Menlo, Consolas, monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.6;
+    letter-spacing: 0.1px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 56px 24px 100px; }
+
+  /* ---- Masthead ---- */
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 2.2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 14px;
+  }
+  h1 {
+    font-size: clamp(28px, 5vw, 40px);
+    line-height: 1.08;
+    letter-spacing: -0.6px;
+    font-weight: 640;
+    margin: 0 0 16px;
+    text-wrap: balance;
+  }
+  .lede {
+    font-size: 16.5px;
+    color: var(--ink-dim);
+    max-width: 66ch;
+    margin: 0 0 8px;
+  }
+  .meta {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted-2);
+    margin-top: 18px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+  }
+  .meta b { color: var(--muted); font-weight: 500; }
+
+  /* ---- Callout ---- */
+  .callout {
+    margin: 34px 0 8px;
+    border: 1px solid var(--hairline);
+    border-left: 3px solid var(--low);
+    background: linear-gradient(180deg, rgba(207,107,63,0.06), rgba(207,107,63,0.015));
+    border-radius: 10px;
+    padding: 20px 22px;
+  }
+  .callout h2 {
+    font-size: 13px;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    color: var(--low);
+    margin: 0 0 10px;
+    font-family: var(--mono);
+  }
+  .callout p { margin: 0 0 10px; color: var(--ink-dim); font-size: 14.5px; }
+  .callout p:last-child { margin-bottom: 0; }
+  .callout strong { color: var(--ink); font-weight: 600; }
+
+  /* ---- Legend ---- */
+  .legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 28px;
+    margin: 30px 0 10px;
+    padding: 20px 22px;
+    border: 1px solid var(--hairline-soft);
+    border-radius: 10px;
+    background: var(--surface);
+  }
+  .legend h3 {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-size: 11.5px;
+    letter-spacing: 1.6px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-family: var(--mono);
+  }
+  .legend .row { display: flex; gap: 11px; align-items: baseline; font-size: 13.5px; color: var(--ink-dim); }
+  .legend .row .k { flex-shrink: 0; }
+
+  /* ---- Chips ---- */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 2px 8px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    line-height: 1.5;
+  }
+  .chip.high { color: #8CE99A; background: rgba(63,185,80,0.12); border-color: rgba(63,185,80,0.3); }
+  .chip.med  { color: #F0CE7A; background: rgba(216,169,58,0.12); border-color: rgba(216,169,58,0.3); }
+  .chip.low  { color: #F0A17A; background: rgba(207,107,63,0.13); border-color: rgba(207,107,63,0.32); }
+  .chip.na   { color: var(--muted); background: rgba(131,140,155,0.09); border-color: rgba(131,140,155,0.24); }
+
+  .src {
+    display: inline-flex;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    padding: 1px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .src.apple { color: #A9CBFF; background: rgba(111,168,255,0.12); border: 1px solid rgba(111,168,255,0.28); }
+  .src.comm  { color: var(--ink-dim); background: rgba(131,140,155,0.10); border: 1px solid rgba(131,140,155,0.22); }
+  .src.est   { color: #C9B08C; background: rgba(200,150,90,0.09); border: 1px solid rgba(200,150,90,0.22); }
+
+  /* ---- Sections ---- */
+  section { margin-top: 48px; }
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--hairline);
+    margin-bottom: 4px;
+  }
+  .sec-num {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .sec-head h2 {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.2px;
+    margin: 0;
+    flex: 1;
+  }
+  .sec-note {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 14px 0 0;
+    max-width: 74ch;
+  }
+  .sec-note code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    background: var(--surface-2);
+    padding: 1px 6px;
+    border-radius: 4px;
+  }
+
+  /* ---- Table ---- */
+  .tbl-scroll { overflow-x: auto; margin-top: 18px; border: 1px solid var(--hairline-soft); border-radius: 10px; }
+  table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 13.5px; }
+  thead th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 600;
+    padding: 12px 16px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--hairline);
+    position: sticky;
+    top: 0;
+  }
+  tbody td {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--hairline-soft);
+    vertical-align: top;
+    color: var(--ink-dim);
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: rgba(91,157,255,0.035); }
+  .token { color: var(--ink); font-weight: 550; }
+  .token .el { display: block; font-size: 12px; color: var(--muted-2); font-weight: 400; margin-top: 2px; }
+  .val {
+    font-family: var(--mono);
+    color: #DCE3EE;
+    font-variant-numeric: tabular-nums;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+  .val .u { color: var(--muted); }
+  .val.wrap { white-space: normal; }
+  td.c-src { white-space: nowrap; }
+  td.c-conf { white-space: nowrap; }
+  .srclink { color: var(--accent); text-decoration: none; border-bottom: 1px solid rgba(91,157,255,0.25); font-size: 12.5px; }
+  .srclink:hover { border-bottom-color: var(--accent); }
+  .note-inline { color: var(--muted); font-size: 12.5px; }
+
+  a:focus-visible, .srclink:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
+
+  footer {
+    margin-top: 64px;
+    padding-top: 22px;
+    border-top: 1px solid var(--hairline);
+    font-size: 12.5px;
+    color: var(--muted-2);
+    font-family: var(--mono);
+    line-height: 1.75;
+  }
+  footer a { color: var(--muted); }
+
+  @media (max-width: 600px) {
+    .wrap { padding: 40px 16px 80px; }
+    .legend { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="wrap">
+
+  <p class="eyebrow">Design-token calibration set // low-confidence remediation</p>
+  <h1>macOS Tahoe (26) &amp; iOS 26 — sourced numeric values</h1>
+  <p class="lede">Hard values for a Tahoe calibration set, each tagged by <strong>provenance</strong> (who authored the number) and <strong>confidence</strong>. Every figure was cross-checked against its primary source; contested numbers were adversarially verified and demoted when the source didn't actually state them.</p>
+  <div class="meta">
+    <span><b>Compiled</b> 2026-07-03</span>
+    <span><b>Method</b> 5-agent fan-out + direct Apple HIG JSON + source verification</span>
+    <span><b>Scope</b> numeric specs only</span>
+  </div>
+
+  <div class="callout">
+    <h2>Read this first — the load-bearing finding</h2>
+    <p><strong>Apple publishes almost no fixed pt/px numbers for Tahoe.</strong> The HIG is overwhelmingly qualitative, and the new design system is deliberately <em>derived, not fixed</em>: corner radii are computed by the concentric rule (radius = parent radius − padding) and vary per window configuration, so for many targets <strong>there is no single canonical value to quote</strong>.</p>
+    <p><strong>The real shadow numbers live only inside Apple's Figma/Sketch UI kits</strong> as inspectable effect layers. The official "macOS 26" kit (figma.com/@apple, verified, 39.8k users) exists — but its values are readable <em>only by opening the file in an authenticated Figma editor</em>. The community landing page exposes zero inspectable numbers, and I did not sign in. So no Apple-authored shadow value could be extracted here; the shadow rows below are community reconstructions, clearly flagged.</p>
+    <p><strong>Poison value to purge from any calibration set:</strong> the ubiquitous <code style="font-family:var(--mono);font-size:12px;color:#F0A17A">box-shadow: 0 8px 32px rgba(31,38,135,…)</code> tagged "iOS 26" across CSS blogs is <strong>recycled 2020 glassmorphism</strong> (Hype4/glassmorphism.com default), predating Liquid Glass by ~5 years. Not measured, not Apple. Two independent agents flagged it.</p>
+  </div>
+
+  <div class="legend">
+    <h3>How to read the tags</h3>
+    <div class="row"><span class="k"><span class="src apple">Apple</span></span><span>Apple-authored — HIG / developer docs / WWDC. Ground truth.</span></div>
+    <div class="row"><span class="k"><span class="chip high">high</span></span><span>Apple doc value, or a design-kit inspector value.</span></div>
+    <div class="row"><span class="k"><span class="src comm">Community</span></span><span>Third-party measured from the running OS (teardown).</span></div>
+    <div class="row"><span class="k"><span class="chip med">med</span></span><span>Teardown / community-measured, corroborated.</span></div>
+    <div class="row"><span class="k"><span class="src est">Reconstr.</span></span><span>Author's approximation — chosen "to look similar," no provenance.</span></div>
+    <div class="row"><span class="k"><span class="chip low">low</span></span><span>Estimate / reconstruction / unverified. Do not trust as measured.</span></div>
+  </div>
+
+  <!-- ============ 1. SHADOWS ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">01</span><h2>Shadows &nbsp;<span style="font-size:13px;color:var(--muted);font-weight:400">— highest priority</span></h2></div>
+    <p class="sec-note">No Apple-authored shadow spec is publicly available in text; the authoritative values are locked in the auth-walled Figma kit. All rows here are <span class="src est">Reconstr.</span> — usable as approximations, <em>not</em> as calibration ground truth. Notably, two independent community sources converge on <code>y 8 · blur 32</code> for a card shadow, which is the closest thing to a community consensus.</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>Token / element</th><th>Value</th><th>Source</th><th>Conf.</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="token">Card / panel shadow<span class="el">community consensus (2 sources agree)</span></td>
+            <td class="val wrap">x 0 · y 8<span class="u">px</span> · blur 32<span class="u">px</span> · spread 0 · <span style="color:var(--ink-dim)">rgba(0,0,0,0.10–0.18)</span></td>
+            <td class="c-src"><span class="src est">Reconstr.</span><br><a class="srclink" href="https://raw.githubusercontent.com/JUNGHERZ/GlassKit/main/glasskit.css">GlassKit .css</a> · <a class="srclink" href="https://medium.com/@mohon.design/beyond-the-blur-figmas-revolutionary-native-glass-effect-redefines-ui-transparency-67015eab84d8">Figma tut.</a></td>
+            <td class="c-conf"><span class="chip low">low</span></td>
+          </tr>
+          <tr>
+            <td class="token">Modal / sheet shadow<span class="el">two-layer</span></td>
+            <td class="val wrap">0 24 80 rgba(0,0,0,0.4)<br>+ 0 8 32 rgba(0,0,0,0.2) <span class="u">(px)</span></td>
+            <td class="c-src"><span class="src est">Reconstr.</span><br><a class="srclink" href="https://raw.githubusercontent.com/JUNGHERZ/GlassKit/main/glasskit.css">GlassKit <code style="font-size:11px">--gl-shadow-modal</code></a></td>
+            <td class="c-conf"><span class="chip low">low</span></td>
+          </tr>
+          <tr>
+            <td class="token">Toast / popover-like<span class="el"></span></td>
+            <td class="val wrap">0 8 32 <span style="color:var(--ink-dim)">rgba(0,0,0,0.25)</span> <span class="u">px</span></td>
+            <td class="c-src"><span class="src est">Reconstr.</span><br><a class="srclink" href="https://raw.githubusercontent.com/JUNGHERZ/GlassKit/main/glasskit.css">GlassKit <code style="font-size:11px">--gl-shadow-toast</code></a></td>
+            <td class="c-conf"><span class="chip low">low</span></td>
+          </tr>
+          <tr>
+            <td class="token">Button / chip shadow<span class="el"></span></td>
+            <td class="val wrap">0 4 16 <span style="color:var(--ink-dim)">rgba(0,0,0,0.12)</span> <span class="u">px</span></td>
+            <td class="c-src"><span class="src est">Reconstr.</span><br><a class="srclink" href="https://raw.githubusercontent.com/JUNGHERZ/GlassKit/main/glasskit.css">GlassKit <code style="font-size:11px">--gl-shadow-btn</code></a></td>
+            <td class="c-conf"><span class="chip low">low</span></td>
+          </tr>
+          <tr>
+            <td class="token">Focus-ring shadow<span class="el">note: color is bespoke orange, not system</span></td>
+            <td class="val wrap">0 0 0 3<span class="u">px</span> <span style="color:var(--ink-dim)">rgba(245,166,35,0.3)</span></td>
+            <td class="c-src"><span class="src est">Reconstr.</span><br><a class="srclink" href="https://raw.githubusercontent.com/JUNGHERZ/GlassKit/main/glasskit.css">GlassKit <code style="font-size:11px">--gl-shadow-focus</code></a></td>
+            <td class="c-conf"><span class="chip low">low</span></td>
+          </tr>
+          <tr>
+            <td class="token">Inner specular highlight<span class="el">rim / inset sheen</span></td>
+            <td class="val wrap">inset 0 1–4 <span style="color:var(--ink-dim)">rgba(255,255,255,0.25–0.30)</span></td>
+            <td class="c-src"><span class="src est">Reconstr.</span><br><a class="srclink" href="https://dev.to/kevinbism/recreating-apples-liquid-glass-effect-with-pure-css-3gpl">kevinbism</a></td>
+            <td class="c-conf"><span class="chip low">low</span></td>
+          </tr>
+          <tr>
+            <td class="token">macOS native window shadow<span class="el">system-rendered drop shadow</span></td>
+            <td class="val wrap"><span class="note-inline">no published px value anywhere — historically very large (tens of px blur), content-dependent</span></td>
+            <td class="c-src"><span class="src comm">Community</span> <span class="note-inline">(qualitative)</span></td>
+            <td class="c-conf"><span class="chip na">none</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 2. LIQUID GLASS ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">02</span><h2>Liquid Glass material — blur &amp; saturation</h2></div>
+    <p class="sec-note"><strong>No true OS measurement exists in any public source.</strong> Apple exposes only <em>semantic</em> materials via <code>glassEffect(_:in:)</code> — <code>.regular</code> and <code>.clear</code> — with zero raw parameters. The real effect is a GPU refraction/lensing shader, not a static blur, so it can't be reduced to one <code>blur(Npx)</code>. Every number below is a developer's eyeballed reproduction; ranges are wide precisely because they're aesthetic choices.</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>Parameter</th><th>Value / range</th><th>Source</th><th>Conf.</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="token">Named materials (the only Apple "spec")<span class="el">glassEffect API</span></td>
+            <td class="val wrap"><span style="color:var(--ink-dim)">.regular · .clear · .tint(Color) · .interactive()</span></td>
+            <td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/documentation/swiftui/glass">SwiftUI Glass</a></td>
+            <td class="c-conf"><span class="chip high">high</span></td>
+          </tr>
+          <tr>
+            <td class="token">Clear-glass dimming layer<span class="el">over bright content</span></td>
+            <td class="val">35<span class="u">%</span> opacity (dark)</td>
+            <td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/design/human-interface-guidelines/materials">HIG Materials</a></td>
+            <td class="c-conf"><span class="chip high">high</span></td>
+          </tr>
+          <tr>
+            <td class="token">Backdrop blur (CSS repro)<span class="el">with SVG refraction added</span></td>
+            <td class="val wrap">2–8<span class="u">px</span> <span class="note-inline">(clusters at 2px; ~20px if "plain frosted" w/o refraction)</span></td>
+            <td class="c-src"><span class="src est">Reconstr.</span><br><a class="srclink" href="https://dev.to/kevinbism/recreating-apples-liquid-glass-effect-with-pure-css-3gpl">kevinbism</a> · <a class="srclink" href="https://github.com/dpawlikowski/liquid-glass">dpawlikowski</a></td>
+            <td class="c-conf"><span class="chip low">low</span></td>
+          </tr>
+          <tr>
+            <td class="token">Saturation (CSS repro)<span class="el">de-facto community default</span></td>
+            <td class="val wrap">saturate(180<span class="u">%</span>) <span class="note-inline">· "explainer" articles independently guess +10–20%</span></td>
+            <td class="c-src"><span class="src est">Reconstr.</span><br><a class="srclink" href="https://github.com/dpawlikowski/liquid-glass">dpawlikowski</a></td>
+            <td class="c-conf"><span class="chip low">low</span></td>
+          </tr>
+          <tr>
+            <td class="token">Tint fill alpha<span class="el">white milky overlay</span></td>
+            <td class="val wrap">0.10–0.20 <span class="note-inline">typical (some authors 0.55–0.60)</span></td>
+            <td class="c-src"><span class="src est">Reconstr.</span></td>
+            <td class="c-conf"><span class="chip low">low</span></td>
+          </tr>
+          <tr>
+            <td class="token">SVG refraction (the "real" mechanism)<span class="el">feTurbulence + feDisplacementMap</span></td>
+            <td class="val wrap">baseFrequency 0.008–0.05 · displacement scale ≈18–20</td>
+            <td class="c-src"><span class="src est">Reconstr.</span><br><a class="srclink" href="https://kube.io/blog/liquid-glass-css-svg/">kube.io</a></td>
+            <td class="c-conf"><span class="chip low">low</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 3. HIT TARGETS / CONTROL SIZES ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">03</span><h2>Control sizes &amp; hit targets</h2></div>
+    <p class="sec-note">The strongest Apple-authored numeric haul. The macOS <strong>28×28 pt</strong> the calibration set referenced lives on the HIG <em>Accessibility</em> page (not Layout). These are the highest-confidence values in this whole set.</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>Token</th><th>Value</th><th>Source</th><th>Conf.</th></tr></thead>
+        <tbody>
+          <tr><td class="token">Default control size — macOS</td><td class="val">28 × 28 <span class="u">pt</span></td><td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/design/human-interface-guidelines/accessibility">HIG Accessibility</a></td><td><span class="chip high">high</span></td></tr>
+          <tr><td class="token">Minimum control size — macOS</td><td class="val">20 × 20 <span class="u">pt</span></td><td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/design/human-interface-guidelines/accessibility">HIG Accessibility</a></td><td><span class="chip high">high</span></td></tr>
+          <tr><td class="token">Minimum hit region — iOS / iPadOS / tvOS</td><td class="val">44 × 44 <span class="u">pt</span></td><td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/design/human-interface-guidelines/buttons">HIG Buttons</a></td><td><span class="chip high">high</span></td></tr>
+          <tr><td class="token">Minimum hit region — visionOS</td><td class="val">60 × 60 <span class="u">pt</span></td><td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/design/human-interface-guidelines/accessibility">HIG</a></td><td><span class="chip high">high</span></td></tr>
+          <tr><td class="token">Interactive element padding — with bezel</td><td class="val">~12 <span class="u">pt</span></td><td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/design/human-interface-guidelines/accessibility">HIG</a></td><td><span class="chip high">high</span></td></tr>
+          <tr><td class="token">Interactive element padding — no bezel</td><td class="val">~24 <span class="u">pt</span></td><td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/design/human-interface-guidelines/accessibility">HIG</a></td><td><span class="chip high">high</span></td></tr>
+          <tr><td class="token">macOS image-button image-to-edge padding</td><td class="val">~10 <span class="u">px</span></td><td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/design/human-interface-guidelines/buttons">HIG Buttons</a></td><td><span class="chip med">med</span></td></tr>
+          <tr><td class="token">Color contrast — text ≤17pt / ≥18pt / bold</td><td class="val">4.5:1 / 3:1 / 3:1</td><td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/design/human-interface-guidelines/accessibility">HIG</a></td><td><span class="chip high">high</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 4. LAYOUT DIMENSIONS ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">04</span><h2>Layout — bars, sidebar, menu bar</h2></div>
+    <p class="sec-note">Apple's HIG publishes <strong>no</strong> toolbar height, tab-bar height, sidebar width, or menu row height in points (all confirmed qualitative-only). The usable numbers come from a Tahoe-current community reference (Mario Aguzman's HIG summaries) and on-device measurement. Toolbar &amp; tab-bar heights: <strong>no verified value found — measure in-app.</strong></p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>Token</th><th>Value</th><th>Source</th><th>Conf.</th></tr></thead>
+        <tbody>
+          <tr><td class="token">Sidebar width — min / max<span class="el">macOS, ranges (no single default)</span></td><td class="val wrap">min 225–275 · max 350–400 <span class="u">pt</span></td><td class="c-src"><span class="src comm">Community</span><br><a class="srclink" href="https://marioaguzman.github.io/design/sidebarguidelines/">Aguzman (HIG-derived, Tahoe-current)</a></td><td><span class="chip med">med</span></td></tr>
+          <tr><td class="token">Menu bar height — Tahoe<span class="el">rendered px, standard display</span></td><td class="val">31 <span class="u">px</span> <span class="note-inline">(was 25px in Sequoia)</span></td><td class="c-src"><span class="src comm">Community</span><br><a class="srclink" href="https://forums.macrumors.com/threads/yet-another-stupid-thing-about-tahoe-new-ui-the-menu-bar-is-taller-for-no-reason.2465392/">MacRumors (measured, 2 sources)</a></td><td><span class="chip med">med</span></td></tr>
+          <tr><td class="token">Menu bar height — logical<span class="el">Apple HIG baseline (pre-Tahoe lineage)</span></td><td class="val">24 <span class="u">pt</span></td><td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/design/human-interface-guidelines/the-menu-bar">HIG Menu Bar</a></td><td><span class="chip high">high</span></td></tr>
+          <tr><td class="token">Menu-bar-extra working area</td><td class="val">22 <span class="u">pt</span></td><td class="c-src"><span class="src comm">Community</span><br><a class="srclink" href="https://bjango.com/articles/designingmenubarextras/">Bjango</a></td><td><span class="chip high">high</span></td></tr>
+          <tr><td class="token">Window content margins<span class="el">inherited macOS metric</span></td><td class="val wrap">20 <span class="u">pt</span> L/R/bottom · 14 <span class="u">pt</span> below toolbar</td><td class="c-src"><span class="src comm">Community</span><br><a class="srclink" href="https://marioaguzman.github.io/design/layoutguidelines/">Aguzman</a></td><td><span class="chip med">med</span></td></tr>
+          <tr><td class="token">Bottom bar height — large / small</td><td class="val">32 / 22 <span class="u">pt</span></td><td class="c-src"><span class="src comm">Community</span><br><a class="srclink" href="https://marioaguzman.github.io/design/layoutguidelines/">Aguzman</a></td><td><span class="chip med">med</span></td></tr>
+          <tr><td class="token">Toolbar height (macOS)</td><td class="val wrap"><span class="note-inline">no verified value — item-driven, ~38–40px button area in prior eras; measure in-app</span></td><td class="c-src"><span class="src comm">Community</span> <span class="note-inline">(pre-Tahoe)</span></td><td><span class="chip na">none</span></td></tr>
+          <tr><td class="token">Tab-bar height (macOS window tabs)</td><td class="val wrap"><span class="note-inline">no value found for Tahoe — measure in-app or open Figma kit</span></td><td class="c-src"><span class="src comm">—</span></td><td><span class="chip na">none</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 5. CORNER RADII ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">05</span><h2>Corner radii &amp; the concentric system</h2></div>
+    <p class="sec-note">This is where Tahoe breaks the "fixed token" model hardest. Radii are <strong>computed, not stored</strong>. Apple's own apps ship ~4 different window radii depending on titlebar-only vs toolbar vs sidebar. The one thing Apple states numerically is the <em>rule</em>, via WWDC25 session 356 — the shape formulas below. Everything asking for a single pt radius (sheet, menu, button, field, segmented, window) has <strong>no Apple-published value</strong>.</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>Token</th><th>Value / rule</th><th>Source</th><th>Conf.</th></tr></thead>
+        <tbody>
+          <tr><td class="token">Concentric-corner rule<span class="el">the governing formula (Apple-authored)</span></td><td class="val wrap">radius = parent radius − padding</td><td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/videos/play/wwdc2025/356/">WWDC25 s.356</a></td><td><span class="chip high">high</span></td></tr>
+          <tr><td class="token">Capsule-shape rule</td><td class="val wrap">radius = ½ × container height</td><td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/videos/play/wwdc2025/356/">WWDC25 s.356</a></td><td><span class="chip high">high</span></td></tr>
+          <tr><td class="token">New API for this<span class="el">SwiftUI / UIKit</span></td><td class="val wrap"><span style="color:var(--ink-dim)">ConcentricRectangle · UICornerConfiguration</span></td><td class="c-src"><span class="src apple">Apple</span><br><a class="srclink" href="https://developer.apple.com/documentation/TechnologyOverviews/adopting-liquid-glass">Adopting Liquid Glass</a></td><td><span class="chip high">high</span></td></tr>
+          <tr><td class="token">Window corner radius (macOS)<span class="el">varies by window config</span></td><td class="val wrap"><span class="note-inline">no fixed value; "26/16 pt" circulating online is UNVERIFIED — not in cited sources</span></td><td class="c-src"><span class="src comm">Community</span><br><a class="srclink" href="https://lapcatsoftware.com/articles/2026/3/1.html">Lapcat (qualitative)</a></td><td><span class="chip low">low</span></td></tr>
+          <tr><td class="token">Window resize hit-area<span class="el">the one hard window number</span></td><td class="val">19 × 19 <span class="u">px</span></td><td class="c-src"><span class="src comm">Community</span><br><a class="srclink" href="https://9to5mac.com/2026/01/13/macos-26-windows-are-hard-to-resize-because-they-arent-really-rounded/">9to5Mac (verified)</a></td><td><span class="chip med">med</span></td></tr>
+          <tr><td class="token">Sheet corner radius</td><td class="val wrap"><span class="note-inline">no Apple value; tracks parent window concentrically. Medium detent ≈ 50% height (Apple)</span></td><td class="c-src"><span class="src apple">Apple</span> <span class="note-inline">(detent only)</span><br><a class="srclink" href="https://developer.apple.com/design/human-interface-guidelines/sheets">HIG Sheets</a></td><td><span class="chip na">none</span></td></tr>
+          <tr><td class="token">Menu corner radius / row height</td><td class="val wrap"><span class="note-inline">no value; menus gain 4 rounded corners in Tahoe (qualitative, confirmed)</span></td><td class="c-src"><span class="src comm">Community</span><br><a class="srclink" href="https://mjtsai.com/blog/2025/10/16/tahoe-window-corners/">MJTsai</a></td><td><span class="chip na">none</span></td></tr>
+          <tr><td class="token">Button / text-field / segmented radius</td><td class="val wrap"><span class="note-inline">no Apple value — now shape-derived (Capsule / ConcentricRectangle). "radius 12" seen online is a tutorial author's own choice</span></td><td class="c-src"><span class="src est">Reconstr.</span><br><a class="srclink" href="https://www.captain-design.com/blog/how-to-create-segmented-buttons-figma-tutorial/">Captain-Design tut.</a></td><td><span class="chip na">none</span></td></tr>
+          <tr><td class="token">Focus ring width / offset (macOS)</td><td class="val wrap"><span class="note-inline">no Apple value; ring infers control's concentric shape. Legacy ~2px line + bloom (pre-Tahoe)</span></td><td class="c-src"><span class="src apple">Apple</span> <span class="note-inline">(qualitative)</span><br><a class="srclink" href="https://developer.apple.com/design/human-interface-guidelines/focus-and-selection">HIG Focus</a></td><td><span class="chip na">none</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ============ 6. AUTHORITATIVE SOURCES ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">06</span><h2>To get the real shadow numbers</h2></div>
+    <p class="sec-note">The only path to Apple-authored shadow / radius values is opening the official kit in an authenticated Figma editor (or the Sketch library locally) and reading the Inspect panel's effect layers for a window, sheet, popover, and card. These require <em>your</em> logged-in session — I did not and cannot sign in.</p>
+    <div class="tbl-scroll">
+      <table>
+        <thead><tr><th>Resource</th><th>What it gives</th><th>Type</th></tr></thead>
+        <tbody>
+          <tr><td class="token"><a class="srclink" href="https://www.figma.com/community/file/1543337041090580818/macos-26">Figma — official macOS 26 kit</a></td><td>Inspect window/sheet/popover/card effect layers for real shadow values</td><td><span class="src apple">Apple</span></td></tr>
+          <tr><td class="token"><a class="srclink" href="https://www.figma.com/community/file/1527721578857867021/ios-and-ipados-26">Figma — official iOS &amp; iPadOS 26 kit</a></td><td>Same, for iOS 26; incl. system colors, corner radii, materials</td><td><span class="src apple">Apple</span></td></tr>
+          <tr><td class="token"><a class="srclink" href="https://developer.apple.com/design/resources/">Apple Design Resources</a></td><td>Sketch libraries (inspectable offline). Note: now defaults to 27; 26 is prior-gen</td><td><span class="src apple">Apple</span></td></tr>
+          <tr><td class="token"><a class="srclink" href="https://developer.apple.com/videos/play/wwdc2025/356/">WWDC25 session 356</a></td><td>The shape/corner formulas, authoritative</td><td><span class="src apple">Apple</span></td></tr>
+          <tr><td class="token"><a class="srclink" href="https://bjango.com/articles/matchingdropshadows/">Bjango — matching drop shadows</a></td><td>How to convert Figma effect-layer values → CSS / SwiftUI correctly once measured</td><td><span class="src comm">Ref</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    Provenance is the point: only <span style="color:#A9CBFF">Apple</span>-tagged + <span style="color:#8CE99A">high</span> rows belong in a calibration set as ground truth.
+    <span style="color:#F0CE7A">med</span> rows are corroborated community measurements. <span style="color:#F0A17A">low</span> rows are reconstructions — anchors, not truth.<br>
+    Method: 5 parallel research agents, Apple HIG pulled via the <code style="color:var(--muted)">developer.apple.com/tutorials/data/…</code> JSON endpoints (public HTML is JS-walled), contested numbers verified against primary sources and demoted on failure.
+  </footer>
+
+</div>

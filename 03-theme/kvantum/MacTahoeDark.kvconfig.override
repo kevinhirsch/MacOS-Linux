@@ -1,0 +1,143 @@
+# ============================================================================
+# Tahoe-Liquid-Glass  ·  Kvantum DARK override  (merge onto MacTahoeDark.kvconfig)
+# ----------------------------------------------------------------------------
+# These are ONLY the keys we change vs upstream vinceliuice/MacTahoe-kde.
+# apply-kvantum-overrides.sh writes each of these into the installed kvconfig
+# with kwriteconfig6 (kvconfig is an INI file). Do NOT hand-copy the whole file
+# over upstream — we want upstream's SVG-driven [Widget] sections untouched.
+#
+# NOTE ON RADII: Kvantum has no numeric corner_radius key. Frame radii
+# (window 16/20/26pt, card 9pt, control 24/28pt, concentric) live in the
+# .svg geometry. See ../SVG-RADII-NOTES.md for the SVG elements to edit.
+# What we CAN drive from kvconfig: control heights (min_width/min_height via
+# the [PanelButtonCommand]/[PanelButtonTool] sections), scrollbar/slider
+# widths, menu/tooltip blur + shadow, spacing, and all colors.
+#
+# Tokens honoured here:
+#   scrollbar 15pt          -> scroll_width=15
+#   button 24 / capsule 28  -> min heights in the button sections below
+#   menu item 24pt          -> layout_spacing / menu geometry + section mins
+#   dark material #2B2E31   -> window.color / base.color family
+#   TINT BACKGROUND ONLY    -> highlight.color tints; text stays #dedede/#fff
+#   sidebar sel #0058D0     -> highlight.color (dark)
+#   accent Blue #4380E8     -> link.color / progress text sits on accent
+# ============================================================================
+
+[%General]
+# --- geometry / metrics -----------------------------------------------------
+scroll_width=15
+scroll_min_extent=50
+scroll_arrows=false
+transient_scrollbar=false
+slider_width=6
+slider_handle_width=28
+slider_handle_length=20
+splitter_width=1
+check_size=16
+# menu item height 24pt: keep 4px layout spacing, mild margins; height is also
+# enforced by min_height in [MenuItem] below.
+layout_spacing=4
+layout_margin=4
+submenu_overlap=0
+menu_separator_height=8
+# --- translucency / liquid-glass -------------------------------------------
+composite=true
+translucent_windows=true
+blurring=true
+popup_blurring=true
+reduce_menu_opacity=18
+menu_blur_radius=9
+menu_shadow_depth=6
+tooltip_blur_radius=8
+tooltip_shadow_depth=6
+# dark material 2B2E31 -> the KDE contrast/intensity effect is left neutral so
+# the substrate blur (02-glass-effect) shows through.
+contrast=1.00
+intensity=1.00
+saturation=1.05
+animate_states=true
+dark_titlebar=true
+# a11y: reduce-transparency flips these to false at runtime (see 04-configs).
+
+[GeneralColors]
+# Dark material #2B2E31 (43,46,49) as the window/base family.
+window.color=#2b2e31
+inactive.window.color=#2b2e31
+base.color=#2b2e31
+inactive.base.color=#2b2e31
+alt.base.color=#33363a
+inactive.alt.base.color=#2f3236
+button.color=#3a3e42
+light.color=#44484d
+mid.light.color=#3f4348
+dark.color=#242629
+mid.color=#3c4045
+# SELECTION / HIGHLIGHT = accent. Dark sidebar selection fill #0058D0.
+# TINT THE BACKGROUND, NEVER TEXT -> highlight.text stays pure white.
+highlight.color=#0058d0
+inactive.highlight.color=#3c6bd2
+highlight.text.color=#ffffff
+inactive.highlight.text.color=#f5f5f5
+# TEXT never tinted: neutral greys on tinted bg.
+text.color=#dedede
+inactive.text.color=#bfbfbf
+window.text.color=#dedede
+inactive.window.text.color=#bfbfbf
+button.text.color=#dedede
+disabled.text.color=#7f7f7f
+tooltip.base.color=#33363a
+tooltip.text.color=#dedede
+# Accent Blue #4380E8 for links; progress text on accent stays white.
+link.color=#4380e8
+link.visited.color=#93359d
+progress.indicator.text.color=#ffffff
+
+[Hacks]
+transparent_ktitle_label=true
+transparent_menutitle=true
+blur_translucent=true
+respect_darkness=true
+normal_default_pushbutton=true
+force_size_grip=true
+no_selection_tint=true
+tint_on_mouseover=0
+blur_only_active_window=false
+single_top_toolbar=true
+transparent_arrow_button=true
+
+# ---------------------------------------------------------------------------
+# CONTROL HEIGHTS (button 24pt rounded / capsule 28pt / min 28x20pt).
+# We override the min_width/min_height of upstream's button sections. Corner
+# rounding itself comes from the SVG 'button' element; here we only set size.
+# ---------------------------------------------------------------------------
+[PanelButtonCommand]
+# capsule/primary buttons -> 28pt tall, 28pt min width
+min_width=+0.0font
+min_height=28
+frame.expansion=14
+text.margin.left=12
+text.margin.right=12
+
+[PanelButtonTool]
+# toolbar / icon buttons -> 24pt rounded
+min_width=24
+min_height=24
+frame.expansion=12
+
+[MenuItem]
+# menu item 24pt
+inherits=PanelButtonCommand
+min_height=24
+text.margin.left=12
+text.margin.right=12
+text.margin.top=0
+text.margin.bottom=0
+
+[ComboBox]
+min_height=28
+
+[LineEdit]
+min_height=28
+
+[IndicatorSpinBox]
+min_height=28

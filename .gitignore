@@ -1,0 +1,20 @@
+# Build artifacts (the KWin effect compiles here)
+build/
+**/build/
+*.o
+*.so
+CMakeCache.txt
+CMakeFiles/
+
+# Python
+__pycache__/
+*.pyc
+
+# Editor / OS cruft
+*.swp
+*~
+.DS_Store
+
+# Local caches / state (never publish these)
+.cache/
+*.log

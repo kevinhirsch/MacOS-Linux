@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+"""tahoe-theme-switch — sun-based light/dark switcher for the Tahoe Plasma theme.
+
+Uses `astral` to compute today's sunrise/sunset for Phoenix, AZ, decides whether
+it is currently day or night, and applies the matching Tahoe look:
+
+    day   -> color scheme TahoeLight   + look-and-feel MacTahoe-Light + Kvantum MacTahoe
+    night -> color scheme TahoeDark    + look-and-feel MacTahoe-Dark  + Kvantum MacTahoeDark
+
+Modes:
+    tahoe-theme-switch apply         # decide by sun, apply the right theme (default)
+    tahoe-theme-switch light         # force light
+    tahoe-theme-switch dark          # force dark
+    tahoe-theme-switch next-time     # print the next transition time (used to arm the timer)
+
+Phoenix does NOT observe DST, so a fixed America/Phoenix tz is correct year-round.
+Override location with env: TAHOE_LAT, TAHOE_LON, TAHOE_TZ.
+Respect the a11y contrast toggle: if ~/.config/tahoe-liquid-glass/contrast is
+present and contains "1", the light scheme becomes TahoeLight-Contrast.
+"""
+import os
+import sys
+import subprocess
+import shutil
+import datetime as dt
+from pathlib import Path
+
+try:
+    from astral import LocationInfo
+    from astral.sun import sun
+except ImportError:
+    sys.stderr.write(
+        "tahoe-theme-switch: python-astral not installed.\n"
+        "  pip install --user astral   (or your distro's python3-astral)\n"
+    )
+    sys.exit(2)
+
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:  # py<3.9
+    from backports.zoneinfo import ZoneInfo  # type: ignore
+
+# ---- location (Phoenix, AZ by default; no DST) ----------------------------
+LAT = float(os.environ.get("TAHOE_LAT", "33.4484"))
+LON = float(os.environ.get("TAHOE_LON", "-112.0740"))
+TZ = os.environ.get("TAHOE_TZ", "America/Phoenix")
+
+# ---- theme names ----------------------------------------------------------
+SCHEME_LIGHT = "TahoeLight"
+SCHEME_LIGHT_CONTRAST = "TahoeLight-Contrast"
+SCHEME_DARK = "TahoeDark"
+LNF_LIGHT = "com.github.vinceliuice.MacTahoe-Light"
+LNF_DARK = "com.github.vinceliuice.MacTahoe-Dark"
+KVANTUM_LIGHT = "MacTahoe"
+KVANTUM_DARK = "MacTahoeDark"
+
+CFG = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config")))
+CONTRAST_FLAG = CFG / "tahoe-liquid-glass" / "contrast"
+
+
+def _sun_today(now: dt.datetime):
+    loc = LocationInfo(name="Phoenix", region="US", timezone=TZ,
+                       latitude=LAT, longitude=LON)
+    s = sun(loc.observer, date=now.date(), tzinfo=ZoneInfo(TZ))
+    return s["sunrise"], s["sunset"]
+
+
+def is_daytime(now: dt.datetime) -> bool:
+    sunrise, sunset = _sun_today(now)
+    return sunrise <= now < sunset
+
+
+def next_transition(now: dt.datetime) -> dt.datetime:
+    """Next sunrise or sunset boundary at/after `now`."""
+    sunrise, sunset = _sun_today(now)
+    if now < sunrise:
+        return sunrise
+    if now < sunset:
+        return sunset
+    # after sunset -> tomorrow's sunrise
+    loc = LocationInfo(latitude=LAT, longitude=LON, timezone=TZ)
+    s = sun(loc.observer, date=(now + dt.timedelta(days=1)).date(),
+            tzinfo=ZoneInfo(TZ))
+    return s["sunrise"]
+
+
+def _run(cmd):
+    try:
+        subprocess.run(cmd, check=False)
+    except FileNotFoundError:
+        sys.stderr.write(f"tahoe-theme-switch: missing command: {cmd[0]}\n")
+
+
+# Resolve kwriteconfig for whichever Plasma generation is installed (6 or 5).
+_KWRITECONFIG = (shutil.which("kwriteconfig6")
+                 or shutil.which("kwriteconfig5") or "kwriteconfig5")
+
+
+def _kwrite(file, group, key, value):
+    _run([_KWRITECONFIG, "--file", file, "--group", group, "--key", key, value])
+
+
+def _contrast_on() -> bool:
+    try:
+        return CONTRAST_FLAG.read_text().strip() == "1"
+    except OSError:
+        return False
+
+
+def apply_light():
+    scheme = SCHEME_LIGHT_CONTRAST if _contrast_on() else SCHEME_LIGHT
+    _run(["plasma-apply-colorscheme", scheme])
+    _run(["plasma-apply-lookandfeel", "--apply", LNF_LIGHT])
+    _kwrite("kvantum.kvconfig", "General", "theme", KVANTUM_LIGHT)
+    # Re-pin Kvantum as the widget style (L&F apply can reset it).
+    _kwrite("kdeglobals", "KDE", "widgetStyle", "kvantum")
+    # If a STATIC wallpaper is in use, swap to the light image (best-effort).
+    _apply_static_wallpaper("MacTahoe-Light")
+    _reconfigure()
+    print(f"applied LIGHT ({scheme})")
+
+
+def apply_dark():
+    _run(["plasma-apply-colorscheme", SCHEME_DARK])
+    _run(["plasma-apply-lookandfeel", "--apply", LNF_DARK])
+    _kwrite("kvantum.kvconfig", "General", "theme", KVANTUM_DARK)
+    _kwrite("kdeglobals", "KDE", "widgetStyle", "kvantum")
+    _apply_static_wallpaper("MacTahoe-Dark")
+    _reconfigure()
+    print("applied DARK (TahoeDark)")
+
+
+def _apply_static_wallpaper(pkg: str):
+    """Only swap if the user applied a static image (dynamic pkg self-switches)."""
+    img = (Path(os.environ.get("XDG_DATA_HOME", str(Path.home() / ".local/share")))
+           / "wallpapers" / pkg / "contents" / "images" / "3840x2160.jpeg")
+    if img.is_file():
+        _run(["plasma-apply-wallpaperimage", str(img)])
+
+
+def _reconfigure():
+    # Nudge KWin so decoration/blur pick up the new scheme.
+    for tool in ("qdbus6", "qdbus"):
+        try:
+            subprocess.run([tool, "org.kde.KWin", "/KWin", "reconfigure"],
+                           check=False, stdout=subprocess.DEVNULL,
+                           stderr=subprocess.DEVNULL)
+            break
+        except FileNotFoundError:
+            continue
+
+
+def main():
+    now = dt.datetime.now(ZoneInfo(TZ))
+    mode = sys.argv[1] if len(sys.argv) > 1 else "apply"
+    if mode == "light":
+        apply_light()
+    elif mode == "dark":
+        apply_dark()
+    elif mode == "next-time":
+        print(next_transition(now).isoformat())
+    elif mode == "apply":
+        (apply_light if is_daytime(now) else apply_dark)()
+    else:
+        sys.stderr.write(f"usage: {sys.argv[0]} [apply|light|dark|next-time]\n")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

@@ -1,0 +1,74 @@
+# ============================================================================
+# Tahoe-Liquid-Glass · Aurorae DARK rc  (installs as MacTahoe-Dark<scale>rc)
+# ----------------------------------------------------------------------------
+# Retuned from upstream aurorae/Darkrc to the calibration traffic-light metrics:
+#   traffic lights ON THE LEFT       -> LeftButtons=XIA (Close, Minimize, Maximize)
+#   diameter 14pt                    -> ButtonWidth/Height=14 (+ per-button = 14)
+#   spacing 24pt (center-to-center)  -> ButtonSpacing=10  (10 gap + 14 button = 24)
+#   inset 26pt from window edge      -> TitleEdgeLeft=19 + ButtonMarginLeft/Border
+#                                       (19 edge + 7 half-button ≈ 26 to 1st center)
+#   titlebar radius 16pt             -> baked into decoration.svg top corners
+#
+# Aurorae button letters:  X=Close  I=Minimize  A=Maximize  M=Menu
+#                          S=AllDesktops F=KeepAbove B=KeepBelow H=Help L=Shade
+# Left→right paint order follows the string, so "XIA" = red, yellow, green.
+# ============================================================================
+
+[General]
+ActiveFocusedTabColor=78,78,78
+ActiveTextColor=225,225,225
+ActiveUnfocusedTabColor=120,120,120
+InactiveFocusedTabColor=120,120,120
+InactiveTextColor=120,120,120
+InactiveUnfocusedTabColor=120,120,120
+ActiveTextShadowColor=255,255,255
+InactiveTextShadowColor=255,255,255
+TitleAlignment=Center
+TitleVerticalAlignment=Center
+UseTextShadow=true
+TextShadowOffsetX=0
+TextShadowOffsetY=1
+# Traffic lights on the LEFT: Close, Minimize, Maximize.
+LeftButtons=XIA
+RightButtons=
+Shadow=true
+Blur=false
+Animation=1
+
+[Layout]
+BorderLeft=1
+BorderRight=1
+BorderBottom=1
+BorderTop=0
+# Titlebar height: macOS Tahoe title bar ≈ 28pt content; keep title text band 16.
+TitleHeight=16
+TitleEdgeTop=8
+TitleEdgeBottom=8
+# 26pt inset to first traffic-light CENTER: 19px left edge + 7px (half of 14) ≈ 26.
+TitleEdgeLeft=19
+TitleEdgeRight=16
+TitleBorderLeft=50
+TitleBorderRight=50
+# --- Traffic-light buttons: 14pt diameter, 24pt center-to-center -----------
+ButtonWidth=14
+ButtonHeight=14
+ButtonSpacing=10
+ButtonMarginTop=7
+ButtonMarginLeft=0
+ButtonMarginRight=0
+ExplicitButtonSpacer=0
+# Per-button overrides so red/yellow/green are all exactly 14pt (Aurorae would
+# otherwise fall back to ButtonWidth; we pin them for safety).
+ButtonWidthClose=14
+ButtonWidthMinimize=14
+ButtonWidthMaximizeRestore=14
+# Shadow padding (upstream values keep the drop-shadow crisp).
+PaddingTop=21
+PaddingBottom=59
+PaddingRight=41
+PaddingLeft=41
+# Maximized: keep the same left inset so lights don't jump when snapping.
+TitleEdgeTopMaximized=8
+TitleEdgeBottomMaximized=8
+TitleEdgeLeftMaximized=19
+TitleEdgeRightMaximized=16

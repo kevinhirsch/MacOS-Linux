@@ -1,0 +1,172 @@
+# ============================================================================
+# Tahoe-Liquid-Glass · LIGHT color scheme
+# ----------------------------------------------------------------------------
+# Regenerated from the Tahoe palette and mapped to Plasma 6 color roles.
+#   accent (default)  Blue   #4380E8  (67,128,232)
+#   sidebar selection fill   #2962D9  (41,98,217)   -> [Colors:Selection] Bg
+#   focus ring               #0A84FF  (10,132,255)  -> DecorationFocus, 3px via KWin
+#   text is NEVER tinted     ForegroundNormal stays neutral graphite (#242424)
+#
+# Palette accents (available for per-app / manual accent switching):
+#   Blue #4380E8 · Purple #93359D · Pink #CF6195 · Red #C2413C · Orange #D97A39
+#   Yellow #DBB047 · Green #66A845 · Graphite #85A6C8
+# Semantic status colors below reuse the palette: Negative=Red, Neutral=Orange,
+# Positive=Green, Link=Blue, Visited=Purple.
+#
+# Install as ~/.local/share/color-schemes/TahoeLight.colors
+# Apply:  plasma-apply-colorscheme TahoeLight
+# ============================================================================
+
+[General]
+ColorScheme=TahoeLight
+Name=Tahoe Light
+shadeSortColumn=true
+# Plasma 6 accent-from-scheme: this is the app accent used when the user picks
+# "accent color from current color scheme".
+accentColor=67,128,232
+
+[Colors:Window]
+BackgroundNormal=245,245,245
+BackgroundAlternate=238,238,238
+ForegroundNormal=36,36,36
+ForegroundInactive=120,120,120
+ForegroundActive=67,128,232
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255
+DecorationHover=67,128,232
+
+[Colors:View]
+BackgroundNormal=255,255,255
+BackgroundAlternate=247,247,247
+ForegroundNormal=36,36,36
+ForegroundInactive=120,120,120
+ForegroundActive=67,128,232
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255
+DecorationHover=67,128,232
+
+[Colors:Button]
+BackgroundNormal=255,255,255
+BackgroundAlternate=238,238,238
+ForegroundNormal=36,36,36
+ForegroundInactive=120,120,120
+ForegroundActive=67,128,232
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255
+DecorationHover=67,128,232
+
+# SELECTION = sidebar selection fill #2962D9. Selected TEXT stays white — we
+# tint the fill, never the text.
+[Colors:Selection]
+BackgroundNormal=41,98,217
+BackgroundAlternate=61,107,210
+ForegroundNormal=255,255,255
+ForegroundInactive=210,224,252
+ForegroundActive=255,255,255
+ForegroundLink=219,176,71
+ForegroundVisited=210,200,240
+ForegroundNegative=255,255,255
+ForegroundNeutral=255,255,255
+ForegroundPositive=255,255,255
+DecorationFocus=255,255,255
+DecorationHover=131,164,255
+
+[Colors:Tooltip]
+BackgroundNormal=36,36,36
+BackgroundAlternate=51,51,51
+ForegroundNormal=222,222,222
+ForegroundInactive=150,150,150
+ForegroundActive=67,128,232
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255
+DecorationHover=67,128,232
+
+[Colors:Complementary]
+BackgroundNormal=43,46,49
+BackgroundAlternate=51,54,58
+ForegroundNormal=239,240,241
+ForegroundInactive=150,150,150
+ForegroundActive=67,128,232
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255
+DecorationHover=67,128,232
+
+[Colors:Header]
+BackgroundNormal=245,245,245
+BackgroundAlternate=238,238,238
+ForegroundNormal=36,36,36
+ForegroundInactive=120,120,120
+ForegroundActive=67,128,232
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255
+DecorationHover=67,128,232
+
+[Colors:Header][Inactive]
+BackgroundNormal=247,247,247
+BackgroundAlternate=240,240,240
+ForegroundNormal=36,36,36,150
+ForegroundInactive=120,120,120,150
+ForegroundActive=67,128,232,150
+ForegroundLink=67,128,232
+ForegroundVisited=147,53,157
+ForegroundNegative=194,65,60
+ForegroundNeutral=217,122,57
+ForegroundPositive=102,168,69
+DecorationFocus=10,132,255,150
+DecorationHover=67,128,232
+
+# Window-manager (titlebar) colors — titlebar reads as light glass.
+[WM]
+activeBackground=255,255,255
+activeForeground=36,36,36
+activeBlend=86,86,86
+inactiveBackground=245,245,245
+inactiveForeground=120,120,120
+inactiveBlend=102,102,102
+
+[ColorEffects:Inactive]
+Enable=false
+ChangeSelectionColor=true
+Color=112,111,110
+ColorAmount=0.025
+ColorEffect=2
+ContrastAmount=0.1
+ContrastEffect=2
+IntensityAmount=0
+IntensityEffect=0
+
+[ColorEffects:Disabled]
+Color=56,56,56
+ColorAmount=0
+ColorEffect=0
+ContrastAmount=0.65
+ContrastEffect=1
+IntensityAmount=0.1
+IntensityEffect=2
+
+[KDE]
+contrast=4

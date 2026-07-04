@@ -1,0 +1,111 @@
+# ============================================================================
+# Tahoe-Liquid-Glass  ·  Kvantum LIGHT override  (merge onto MacTahoe.kvconfig)
+# ----------------------------------------------------------------------------
+# ONLY the keys we change vs upstream. Same rules as the dark override:
+#   - Kvantum has no numeric corner_radius; radii live in the .svg.
+#   - TINT THE BACKGROUND, NEVER TEXT.
+#   - scrollbar 15pt, control heights 24/28pt, menu item 24pt.
+#   - Light sidebar selection fill  #2962D9.
+# ============================================================================
+
+[%General]
+scroll_width=15
+scroll_min_extent=50
+scroll_arrows=false
+transient_scrollbar=false
+slider_width=6
+slider_handle_width=28
+slider_handle_length=20
+splitter_width=1
+check_size=16
+layout_spacing=4
+layout_margin=4
+submenu_overlap=0
+menu_separator_height=8
+composite=true
+translucent_windows=true
+blurring=true
+popup_blurring=true
+reduce_menu_opacity=12
+menu_blur_radius=9
+menu_shadow_depth=6
+tooltip_blur_radius=8
+tooltip_shadow_depth=6
+contrast=1.00
+intensity=1.00
+saturation=1.02
+animate_states=true
+dark_titlebar=false
+
+[GeneralColors]
+# Light window family (near-white, slightly warm to read as glass).
+window.color=#f5f5f5
+inactive.window.color=#f5f5f5
+base.color=#ffffff
+inactive.base.color=#ffffff
+alt.base.color=#eeeeee
+inactive.alt.base.color=#f0f0f0
+button.color=#ffffff
+light.color=#ffffff
+mid.light.color=#f2f2f2
+dark.color=#c8c8c8
+mid.color=#d8d8d8
+# SELECTION / HIGHLIGHT = accent. Light sidebar selection fill #2962D9.
+highlight.color=#2962d9
+inactive.highlight.color=#7ea0ef
+highlight.text.color=#ffffff
+inactive.highlight.text.color=#f5f5f5
+# TEXT never tinted.
+text.color=#242424
+inactive.text.color=#787878
+window.text.color=#242424
+inactive.window.text.color=#787878
+button.text.color=#242424
+disabled.text.color=#b0b0b0
+tooltip.base.color=#242424
+tooltip.text.color=#dedede
+link.color=#4380e8
+link.visited.color=#93359d
+progress.indicator.text.color=#ffffff
+
+[Hacks]
+transparent_ktitle_label=true
+transparent_menutitle=true
+blur_translucent=true
+respect_darkness=false
+normal_default_pushbutton=true
+force_size_grip=true
+no_selection_tint=true
+tint_on_mouseover=0
+blur_only_active_window=false
+single_top_toolbar=true
+transparent_arrow_button=true
+
+[PanelButtonCommand]
+min_width=+0.0font
+min_height=28
+frame.expansion=14
+text.margin.left=12
+text.margin.right=12
+
+[PanelButtonTool]
+min_width=24
+min_height=24
+frame.expansion=12
+
+[MenuItem]
+inherits=PanelButtonCommand
+min_height=24
+text.margin.left=12
+text.margin.right=12
+text.margin.top=0
+text.margin.bottom=0
+
+[ComboBox]
+min_height=28
+
+[LineEdit]
+min_height=28
+
+[IndicatorSpinBox]
+min_height=28
