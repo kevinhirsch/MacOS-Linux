@@ -25,6 +25,59 @@ real tradeoffs, don't hedge or pad, and don't re-litigate settled decisions.
 - **Pushed** to https://github.com/kevinhirsch/MacOS-Linux (`main`).
 - **Kevin is now dual-booting Kubuntu 26 (Plasma 6) — the Phase-B target.**
 
+## Update — 2026-07-04 (Kubuntu 26 / Plasma 6, Wayland, 1.95× — NOW LIVE)
+Ran the install on the real Plasma-6 box. Phase A applied but the stock scripts
+produced a **non-macOS desktop**; fixed live and now at strong Tahoe parity (menu
+bar + floating dock + macOS icons/cursors + frost + SF Pro all verified on screen).
+**Fixes (cmake ones baked into repo; theme/config ones still live-only unless noted):**
+- **⚠⚠ NVIDIA + Wayland = flashing gray-line artifacts → YOU MUST BE ON X11.** Kubuntu 26
+  installs ONLY `plasma-session-wayland` by default; there is no X11 session out of the
+  box. On this box (Intel iGPU + 2× RTX 2080 Ti) the Wayland session flashes gray-line
+  artifacts on screen updates, badly with KWin blur on. The whole project ASSUMED X11 but
+  it was never installed. **Fix: `sudo apt install plasma-session-x11 kwin-x11` → log out
+  → pick "Plasma (X11)" at SDDM.** On X11 the artifacts vanish and blur/frost works. If a
+  fresh session sees flashing or a "solid, no-frost" desktop, check `echo $XDG_SESSION_TYPE`
+  first — if it says `wayland`, that's the bug, not the theme.
+- **Icons + cursors were never installed.** `MacTahoe-kde` ships no icons/cursors —
+  also install `vinceliuice/MacTahoe-icon-theme` (icons) + its `cursors/`. Cursors
+  land in `~/.local/share/icons` but Xcursor only searches `~/.icons:/usr/share/icons`
+  → **symlink them into `~/.icons`** or Plasma can't find them.
+- **Panel layout never applied.** `00-apply-lookandfeel.sh` set appearance but not the
+  layout; the custom `10-global-menu.sh`/`20-dock-panel.sh` JS built a broken bar.
+  Real fix: `plasma-apply-lookandfeel -a com.github.vinceliuice.MacTahoe-Dark
+  --resetLayout` → macOS top bar (Apple + global menu left; tray/clock right) + floating
+  icons-only dock. Then top panel `floating=false` height≈30 (menuBar token 31px);
+  dock `floating=true hiding=none`.
+- **Dock float caveat:** Plasma flattens the floating gap under a *maximized* window
+  (KWin engine limit — no always-float; "Windows Go Below" scripting value rejected on
+  6.6). Floats fine in windowed use; auto-hide is the alternative.
+- **Fonts:** neither SF Pro nor Inter was installed → UI fell back to Noto Sans. Install
+  `fonts-inter` + real **SF Pro** (Apple's `San-Francisco-Pro-Fonts` pack) → `SF Pro
+  Text`/`SF Pro Display` resolve correctly.
+- **Panel opacity:** panels default to Adaptive → the menu bar + dock go solid/dark
+  whenever ANY window is maximized. `00-apply-lookandfeel.sh` now forces `panelOpacity=2`
+  (Translucent) per panel-id so they stay frosted.
+- **⚠ Global-Theme reset gotcha:** the **"Defaults" button** (or applying another Global
+  Theme like Kubuntu Dark / Oxygen) in System Settings → Colors & Themes reverts
+  EVERYTHING (look-and-feel, icons, colors, widget style, panel layout) to the distro
+  default in one click — this is what "all my settings disappeared" looks like. One-line
+  recovery: **`./install.sh --no-base --no-glass`** (re-applies theme + configs, ~1 min).
+- **Avoid hard-killing plasmashell** (`systemctl stop`) mid-write — it truncated
+  `kcminputrc` to 0 bytes once (lost the cursor theme). Use `kquitapp6 plasmashell`.
+- **Phase B build deps:** needs `libdrm-dev` (KWin's cmake transitively requires Libdrm)
+  and `KWin::kwineffects` → **`KWin::kwin`** (KWin 6.6 folded the effects target into
+  one). ✅ Both baked into `install.sh` + `02-glass-effect/{,src/}CMakeLists.txt`.
+
+## ⚠ Phase B reality-check (this handoff earlier OVERSTATED it)
+`02-glass-effect/` is a **DRAFT SKELETON, not a buildable-and-working effect.** Shaders
+(`liquid_glass.frag`, 288 lines), factory, uniforms, shader-loading are real — but
+`liquidglass.cpp`'s render pipeline (backdrop FBO capture, dual-Kawase down/upsample,
+the final lens **draw call**) is all stubbed `TODO`. Even after the cmake fixes it
+compiles + loads but **paints nothing** (and enabling it disables stock blur → worse).
+To make the lens real: **fork `taj-ny/kwin-effects-forceblur`** (working KWin-6
+backdrop+Kawase pipeline) and graft `liquid_glass.frag` onto its final upsample pass.
+That is the marquee remaining work — budget it as a real build, not a "run install".
+
 ## The one load-bearing fact
 Liquid Glass = **frost** (backdrop blur; works on Plasma 5.27's stock KWin Blur) +
 **refraction/lensing** (needs a custom **KWin 6** GLSL effect — only builds on

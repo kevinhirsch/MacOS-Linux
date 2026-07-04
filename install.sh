@@ -98,7 +98,8 @@ phase_base() {
 }
 
 phase_theme() {
-  log "Theme — Kvantum overrides · Aurorae traffic-lights · color-schemes"
+  log "Theme — macOS icons + cursors · Kvantum overrides · Aurorae traffic-lights · color-schemes"
+  run bash "$HERE/03-theme/install-icons.sh"
   run bash "$HERE/03-theme/apply-kvantum-overrides.sh"
   run bash "$HERE/03-theme/aurorae/apply-aurorae.sh"
   run bash "$HERE/03-theme/color-schemes/install-colors.sh"
@@ -145,6 +146,7 @@ phase_glass() {
       step "installing KWin 6 build dependencies (apt)"
       run sudo apt-get install -y git cmake g++ extra-cmake-modules qt6-tools-dev kwin-dev \
         libkf6configwidgets-dev gettext libkf6kcmutils-dev libkdecorations3-dev libepoxy-dev \
+        libdrm-dev \
         || { warn "dependency install failed; leaving stock-blur frost active"; return 0; }
     else
       warn "KWin 6 build tools/headers not found."

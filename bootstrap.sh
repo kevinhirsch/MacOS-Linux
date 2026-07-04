@@ -49,6 +49,15 @@ sudo apt-get update -qq || warn "apt update had warnings; continuing"
 sudo apt-get install -y git "$KVANTUM_PKG" python3-astral \
   || warn "some prerequisites failed; install.sh will report what's missing"
 
+# Plasma 6 / Kubuntu 26 ships ONLY the Wayland session by default. On NVIDIA that
+# produces flashing gray-line artifacts (badly with KWin blur) — this Liquid-Glass
+# theme needs X11. Install the X11 session so you can pick "Plasma (X11)" at login.
+if [[ "$GEN" == "6" ]]; then
+  c "Installing the Plasma X11 session (NVIDIA/Wayland artifact fix — then log into 'Plasma (X11)')"
+  sudo apt-get install -y plasma-session-x11 kwin-x11 \
+    || warn "couldn't install the X11 session; on NVIDIA you may hit Wayland artifacts"
+fi
+
 if [[ ! -f "$DEST/install.sh" ]]; then
   c "Cloning $REPO_URL → $DEST"
   git clone --depth 1 "$REPO_URL" "$DEST"

@@ -55,7 +55,10 @@ find_package(KF6 ${KF6_MIN_VERSION} REQUIRED COMPONENTS
 
 # KWin's effect + OpenGL headers. Provided by kwin-dev (Debian/Ubuntu),
 # kwin-devel (Fedora), or the kwin package (Arch).
-find_package(KWin REQUIRED COMPONENTS kwineffects)
+# NOTE (KWin 6.6.x): KWin no longer exports a separate `kwineffects` component/
+# target; everything is folded into the single imported target `KWin::kwin`.
+# Requesting COMPONENTS kwineffects fails on 6.6; plain find_package(KWin) works.
+find_package(KWin REQUIRED)
 
 # Decoration API (for the window-decoration glass path).
 find_package(KDecoration3 REQUIRED)

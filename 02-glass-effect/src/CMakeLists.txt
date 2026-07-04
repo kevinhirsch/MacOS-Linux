@@ -24,7 +24,7 @@ if(COMMAND kwin_add_effect)
             KF6::ConfigWidgets
             KF6::CoreAddons
             KF6::I18n
-            KWin::kwineffects
+            KWin::kwin
             epoxy::epoxy
     )
 else()
@@ -37,7 +37,7 @@ else()
         PRIVATE
             Qt6::Core Qt6::Gui Qt6::OpenGL
             KF6::ConfigWidgets KF6::CoreAddons KF6::I18n
-            KWin::kwineffects
+            KWin::kwin
             epoxy::epoxy
     )
     install(TARGETS kwin_tahoe_liquid_glass

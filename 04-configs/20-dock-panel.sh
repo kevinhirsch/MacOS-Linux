@@ -72,9 +72,11 @@ tasks.writeConfig("showOnlyCurrentActivity", false);
 tasks.writeConfig("groupingStrategy", 1);       // by program
 tasks.writeConfig("onlyGroupWhenFull", false);
 tasks.writeConfig("indicateAudioStreams", true);
-// Pin a starter set of launchers (edit to taste).
+// Pin a starter set of launchers (edit to taste). Use preferred:// URLs so we don't
+// pin a specific browser that may be absent/snap-named (e.g. plain firefox.desktop
+// vs firefox_firefox.desktop) — an unresolved pin renders as a broken "?" tile.
 tasks.writeConfig("launchers",
-  "applications:systemsettings.desktop,applications:org.kde.dolphin.desktop,applications:firefox.desktop,applications:org.kde.konsole.desktop");
+  "applications:org.kde.dolphin.desktop,preferred://browser,applications:org.kde.konsole.desktop,applications:systemsettings.desktop");
 tasks.reloadConfig();
 JS
 

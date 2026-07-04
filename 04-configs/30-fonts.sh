@@ -19,6 +19,29 @@ UI="SF Pro Text"
 MONO="SF Mono"          # falls back via fontconfig if absent
 DISPLAY="SF Pro Display"
 
+# --- Make sure the fonts actually EXIST -------------------------------------
+# Without this, the QFont strings below silently fall back to Noto Sans (very
+# un-macOS). Inter is the free SF-Pro-like fallback; real SF Pro is not
+# redistributable, so we only install it if you dropped Apple's pack on the Desktop.
+if ! fc-list 2>/dev/null | grep -qi 'Inter'; then
+  sudo apt-get install -y fonts-inter >/dev/null 2>&1 \
+    && echo "==> installed Inter (SF-Pro-like fallback)" \
+    || echo "!! could not apt-install fonts-inter (UI will fall back to Noto)"
+fi
+if ! fc-list 2>/dev/null | grep -qi 'SF Pro'; then
+  SFZIP="$(ls "$HOME"/Desktop/San-Francisco-Pro-Fonts*.zip 2>/dev/null | head -1 || true)"
+  if [[ -n "$SFZIP" ]] && command -v unzip >/dev/null 2>&1; then
+    _t="$(mktemp -d)"; unzip -oq "$SFZIP" -d "$_t"
+    mkdir -p "$HOME/.local/share/fonts/SF-Pro"
+    find "$_t" \( -iname '*.otf' -o -iname '*.ttf' \) -exec cp {} "$HOME/.local/share/fonts/SF-Pro/" \;
+    rm -rf "$_t"
+    echo "==> installed real SF Pro from $SFZIP"
+  else
+    echo "   (no SF Pro pack on Desktop — drop San-Francisco-Pro-Fonts*.zip there for exact type parity)"
+  fi
+fi
+command -v fc-cache >/dev/null 2>&1 && fc-cache -f >/dev/null 2>&1 || true
+
 # QFont builder: $1 family, $2 size, $3 weight(default 50), $4 italic(default 0)
 qfont() { printf '%s,%s,-1,5,%s,%s,0,0,0,0' "$1" "$2" "${3:-50}" "${4:-0}"; }
 
