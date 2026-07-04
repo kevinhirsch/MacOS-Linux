@@ -1,8 +1,8 @@
 # CLAUDE.md
 
-**Fresh session: the full project context & handoff is in [`soul.md`](soul.md). Read it first, then continue.**
+**Fresh session: the full project context & handoff is in [`handoff.md`](handoff.md). Read it first, then continue.**
 
-@soul.md
+@handoff.md
 
 ---
 
