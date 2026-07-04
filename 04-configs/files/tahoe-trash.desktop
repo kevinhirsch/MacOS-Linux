@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Trash
+Comment=Open the Trash
+Icon=user-trash
+Exec=xdg-open trash:/
+Terminal=false
+Categories=Utility;

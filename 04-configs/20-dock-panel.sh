@@ -13,6 +13,15 @@
 #         AUTOHIDE=1 ./20-dock-panel.sh # auto-hide (dodge windows)
 set -euo pipefail
 
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Ship the macOS-style Trash launcher (Plasma 6 here has no standalone trash applet)
+# so it can be pinned at the far right of the dock.
+if [[ -f "$HERE/files/tahoe-trash.desktop" ]]; then
+  mkdir -p "$HOME/.local/share/applications"
+  cp -f "$HERE/files/tahoe-trash.desktop" "$HOME/.local/share/applications/tahoe-trash.desktop"
+  update-desktop-database "$HOME/.local/share/applications" 2>/dev/null || true
+fi
+
 ICON_PX=48
 # Panel thickness ~ icon + padding. 48px icon in a ~64px thick floating dock.
 THICK=64
@@ -75,8 +84,10 @@ tasks.writeConfig("indicateAudioStreams", true);
 // Pin a starter set of launchers (edit to taste). Use preferred:// URLs so we don't
 // pin a specific browser that may be absent/snap-named (e.g. plain firefox.desktop
 // vs firefox_firefox.desktop) — an unresolved pin renders as a broken "?" tile.
+// Trash pinned at the far right (macOS-style). Uses the shipped tahoe-trash.desktop
+// (installed above); a raw "trash:/" is not a valid icontasks launcher pin.
 tasks.writeConfig("launchers",
-  "applications:org.kde.dolphin.desktop,preferred://browser,applications:org.kde.konsole.desktop,applications:systemsettings.desktop");
+  "applications:org.kde.dolphin.desktop,preferred://browser,applications:org.kde.konsole.desktop,applications:systemsettings.desktop,applications:tahoe-trash.desktop");
 tasks.reloadConfig();
 JS
 
