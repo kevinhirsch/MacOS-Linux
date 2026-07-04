@@ -73,6 +73,12 @@ one effect `.so` gets built when/if you land on Plasma 6.
 
 ## Install
 
+**Fastest on Kubuntu 26** — one command (clone + deps + full Phase A/B):
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/kevinhirsch/MacOS-Linux/main/bootstrap.sh)
+```
+
+Or manually:
 ```bash
 # Ubuntu 24.04 (Plasma 5.27) — Phase A: static + frost
 ./install.sh              # full install (user-level; safe for GNOME)

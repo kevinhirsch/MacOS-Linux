@@ -32,15 +32,18 @@ Plasma 6). Plasma 6 is unavailable on Ubuntu 24.04. **Kubuntu 26 is where the
 refraction lens finally works** — that's the whole reason for the dual-boot.
 
 ## ▶ What to do on Kubuntu 26 (Plasma 6) — the immediate next steps
+**One command** (clone + deps + full install; keeps the terminal so sudo can prompt):
+```bash
+bash <(curl -fsSL https://raw.githubusercontent.com/kevinhirsch/MacOS-Linux/main/bootstrap.sh)
+```
+Or step by step:
 ```bash
 sudo apt install -y qt6-style-kvantum        # Kvantum for Qt6 (vs qt5 on 24.04)
-git clone https://github.com/kevinhirsch/MacOS-Linux   # if not already cloned
-cd MacOS-Linux
-./install.sh --glass-deps                     # auto-detects Plasma 6:
-                                              #  Phase A + builds & enables the
-                                              #  KWin 6 refraction effect
-# then log out → pick the Plasma session
+git clone https://github.com/kevinhirsch/MacOS-Linux && cd MacOS-Linux
+./install.sh --glass-deps                     # auto-detects Plasma 6: Phase A +
+                                              #  builds & enables the KWin 6 refraction effect
 ```
+Then log out → pick the Plasma session, and run the **parity loop** (dock, toolbar, Settings).
 After it's applied, run the **parity loop** on Kevin's three priority surfaces —
 **dock, toolbar, Settings window**: render → compare against
 `corpus/screenshots/` → tune `tokens/tahoe.json` → rebuild. Exact targets already
